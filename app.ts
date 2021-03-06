@@ -1,38 +1,6 @@
+/// <reference path="messages.d.ts" />
+
 module Kozy {
-    type HostHasChanged = {
-        type: "HostHasChanged"
-        payload: any
-    }
-
-    type ReceiveClientInfo = {
-        type: "ReceiveClientInfo"
-        payload: any
-    }
-
-    type ReadyAndListening = {
-        type: "ReadyAndListening"
-        payload: any
-    }
-
-    type RelayToHost = {
-        type: "RelayToHost"
-        payload: any
-    }
-
-    type RelayToAllClients = {
-        type: "RelayToAllClients"
-        payload: any
-    }
-
-    type IncomingSystemMessage =
-        | HostHasChanged
-        | ReceiveClientInfo
-
-    type OutgoingSystemMessage =
-        | ReadyAndListening
-        | RelayToHost
-        | RelayToAllClients
-
     class StartupParameters {}
 
     export class GoogleDriveIntegration {
