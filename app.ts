@@ -8,11 +8,11 @@ module Kozy {
         private googleInput: HTMLInputElement;
         private googleClick: HTMLButtonElement;
 
-        public sendOutgoingMessage (message: OutgoingSystemMessage) {
+        public sendOutgoingMessage (message: ClientToServerMessage) {
             this.opener.postMessage(message, "*");
         }
 
-        public receiveIncomingMessage (message: IncomingSystemMessage) {
+        public receiveIncomingMessage (message: ServerToClientMessage) {
             switch (message.type) {
                 case "HostHasChanged":
                     alert("The host has changed.");
@@ -32,7 +32,7 @@ module Kozy {
         }
 
         public start (params: StartupParameters): void {
-            window.addEventListener("message", (event: MessageEvent<IncomingSystemMessage>) => {
+            window.addEventListener("message", (event: MessageEvent<ServerToClientMessage>) => {
                 this.receiveIncomingMessage(event.data);
             });
             this.sendOutgoingMessage({ type: "ReadyAndListening", payload: "google-drive-integration" });

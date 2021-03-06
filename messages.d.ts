@@ -24,11 +24,11 @@ declare namespace Kozy {
         payload: any
     }
 
-    type IncomingSystemMessage =
+    type ServerToClientMessage =
         | HostHasChanged
         | ReceiveClientInfo
 
-    type OutgoingSystemMessage =
+    type ClientToServerMessage =
         | ReadyAndListening
         | RelayToHost
         | RelayToAllClients
