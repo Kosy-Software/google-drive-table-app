@@ -4,26 +4,28 @@ module Kozy {
     class StartupParameters {}
 
     export class GoogleDriveIntegration {
-        private opener: Window;
+        private kozyTable: Window;
         private googleInput: HTMLInputElement;
         private googleClick: HTMLButtonElement;
 
         public sendOutgoingMessage (message: ClientToServerMessage) {
-            this.opener.postMessage(message, "*");
+            this.kozyTable.postMessage(message, "*");
         }
 
         public receiveIncomingMessage (message: ServerToClientMessage) {
             switch (message.type) {
                 case "HostHasChanged":
                     alert("The host has changed.");
+                    break;
                 case "ReceiveClientInfo":
-                    alert("Client info.")
+                    alert("Client info.");
+                    break;
             }
         }
 
         constructor () {
-            this.opener = window.opener;    
-            if (!this.opener) {
+            this.kozyTable = window.parent;    
+            if (!this.kozyTable) {
                 alert("This page is not meant to be ran stand-alone...");
                 throw "This page is not meant to be ran stand-alone...";
             }
