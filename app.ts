@@ -34,6 +34,9 @@ module Kozy {
                 case "ClientHasLeft":
                     //ignore
                     break;
+                default:
+                    console.log("An unexpected message was received: " + JSON.stringify(message));
+                    break;
             }
         }
 
