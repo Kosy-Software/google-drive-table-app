@@ -3,22 +3,36 @@
 module Kozy {
     class StartupParameters {}
 
+    type GoogleDriveIntegrationMessage = any //placeholder
+
     export class GoogleDriveIntegration {
         private kozyTable: Window;
+        private myClientInfo: ClientInfo;
         private googleInput: HTMLInputElement;
         private googleClick: HTMLButtonElement;
 
-        public sendOutgoingMessage (message: ClientToServerMessage) {
+        public sendOutgoingMessage (message: ClientToServerMessage<GoogleDriveIntegrationMessage>) {
             this.kozyTable.postMessage(message, "*");
         }
 
-        public receiveIncomingMessage (message: ServerToClientMessage) {
+        private processIncomingMessage(message: GoogleDriveIntegrationMessage) {
+            //placeholder
+        }
+
+        public receiveIncomingMessage (message: ServerToClientMessage<GoogleDriveIntegrationMessage>) {
             switch (message.type) {
-                case "HostHasChanged":
-                    alert("The host has changed.");
-                    break;
                 case "ReceiveClientInfo":
-                    alert("Client info.");
+                    alert("My client info: " + JSON.stringify(message.payload));
+                    this.myClientInfo = message.payload;
+                    break;
+                case "ReceiveMessage":
+                    this.processIncomingMessage(message.payload);
+                    break;
+                case "ClientHasJoined":
+                    //ignore
+                    break;
+                case "ClientHasLeft":
+                    //ignore
                     break;
             }
         }
@@ -34,10 +48,10 @@ module Kozy {
         }
 
         public start (params: StartupParameters): void {
-            window.addEventListener("message", (event: MessageEvent<ServerToClientMessage>) => {
+            window.addEventListener("message", (event: MessageEvent<ServerToClientMessage<GoogleDriveIntegrationMessage>>) => {
                 this.receiveIncomingMessage(event.data);
             });
-            this.sendOutgoingMessage({ type: "ReadyAndListening", payload: "google-drive-integration" });
+            this.sendOutgoingMessage({ type: "ReadyAndListening", payload: {} });
         }
     }
 }
