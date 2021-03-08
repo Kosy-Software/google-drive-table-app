@@ -59,6 +59,4 @@ module Kozy {
     }
 }
 
-window.onload = () => {
-    new Kozy.GoogleDriveIntegration().start({});
-}
+new Kozy.GoogleDriveIntegration().start({});
