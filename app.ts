@@ -16,6 +16,10 @@ module Kozy {
         private currentClient: ClientInfo;
         private initializer: ClientInfo;
 
+        private log (...message: any) {
+            console.log(this.currentClient.clientName + " log: ", ...message);
+        }
+
         public sendOutgoingMessage (message: ClientToServerMessage<GoogleDriveIntegrationMessage>) {
             this.kozyTable.postMessage(message, "*");
         }
@@ -28,6 +32,7 @@ module Kozy {
                     let iframe = document.getElementById("viewing") as HTMLIFrameElement;
                     //TODO: verify if it's a valid google docs url -> if not -> discard message
                     iframe.src = message.payload;
+                    iframe.sandbox.value = "";
                     iframe.hidden = false;
             }
         }
@@ -35,11 +40,12 @@ module Kozy {
         public receiveIncomingMessage (message: ServerToClientMessage<GoogleDriveIntegrationMessage>) {
             switch (message.type) {
                 case "ReceiveInitialInfo":
-                    alert("Received initialization info: " + JSON.stringify(message.payload));
                     this.currentClient = message.payload.currentClient;
                     this.initializer = message.payload.initializer;
+                    this.log("Received initialization info: ", message.payload);
                     if (this.currentClient.clientUuid == this.initializer.clientUuid) {
-                        document.getElementById("picking").hidden = false;
+                        let picker = document.getElementById("picking");
+                        picker.hidden = false;
                         document.getElementById("google-input").onchange = (event: Event) => {
                             //First draft -> needs fine-tuning
                             let url = (event.currentTarget as HTMLInputElement).value;
@@ -52,20 +58,23 @@ module Kozy {
                             //Start google drive document picker
                         }
                     } else {
-                        document.getElementById("waiting").hidden = false;
+                        let waitingElement = document.getElementById("waiting");
+                        waitingElement.innerHTML = this.initializer.clientName + " is picking a file";
+                        waitingElement.hidden = false;
                     }
                     break;
                 case "ReceiveMessage":
+                    this.log("Received message: ", message.payload);
                     this.processIncomingMessage(message.payload);
                     break;
                 case "ClientHasJoined":
-                    //ignore
+                    this.log("A client has joined: ", message.payload);
                     break;
                 case "ClientHasLeft":
-                    //ignore
+                    this.log("A client has left: ", message.payload)
                     break;
                 default:
-                    console.log("An unexpected message was received: " + JSON.stringify(message));
+                    this.log("An unexpected message was received: ", message);
                     break;
             }
         }
@@ -73,7 +82,6 @@ module Kozy {
         constructor () {
             this.kozyTable = window.parent;    
             if (!this.kozyTable) {
-                alert("This page is not meant to be ran stand-alone...");
                 throw "This page is not meant to be ran stand-alone...";
             }
         }
