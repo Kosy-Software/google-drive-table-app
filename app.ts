@@ -1,6 +1,6 @@
 /// <reference path="messages.d.ts" />
 
-module Kozy {
+module Kosy {
     class StartupParameters {}
 
     type GoogleDriveUrlHasChanged = {
@@ -12,7 +12,7 @@ module Kozy {
         | GoogleDriveUrlHasChanged
 
     export class GoogleDriveIntegration {
-        private kozyTable: Window;
+        private kosyTable: Window;
         private currentClient: ClientInfo;
         private initializer: ClientInfo;
 
@@ -21,7 +21,7 @@ module Kozy {
         }
 
         public sendOutgoingMessage (message: ClientToServerMessage<GoogleDriveIntegrationMessage>) {
-            this.kozyTable.postMessage(message, "*");
+            this.kosyTable.postMessage(message, "*");
         }
 
         private processIncomingMessage(message: GoogleDriveIntegrationMessage) {
@@ -80,8 +80,8 @@ module Kozy {
         }
 
         constructor () {
-            this.kozyTable = window.parent;    
-            if (!this.kozyTable) {
+            this.kosyTable = window.parent;    
+            if (!this.kosyTable) {
                 throw "This page is not meant to be ran stand-alone...";
             }
         }
@@ -95,4 +95,4 @@ module Kozy {
     }
 }
 
-new Kozy.GoogleDriveIntegration().start({});
+new Kosy.GoogleDriveIntegration().start({});
