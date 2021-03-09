@@ -39,7 +39,7 @@ module Kosy {
 
         public receiveIncomingMessage (message: ServerToClientMessage<GoogleDriveIntegrationMessage>) {
             switch (message.type) {
-                case "ReceiveInitialInfo":
+                case "receive-initial-info":
                     this.currentClient = message.payload.clients[message.payload.currentClientUuid];
                     this.initializer = message.payload.clients[message.payload.initializerClientUuid];
                     this.log("Received initialization info: ", message.payload);
@@ -50,7 +50,7 @@ module Kosy {
                             //First draft -> needs fine-tuning
                             let url = (event.currentTarget as HTMLInputElement).value;
                             this.sendOutgoingMessage({ 
-                                type: "RelayMessage", 
+                                type: "relay-message", 
                                 payload: { type: "GoogleDriveUrlHasChanged", payload: url } 
                             });
                         }
@@ -63,14 +63,14 @@ module Kosy {
                         waitingElement.hidden = false;
                     }
                     break;
-                case "ReceiveMessage":
+                case "receive-message":
                     this.log("Received message: ", message.payload);
                     this.processIncomingMessage(message.payload);
                     break;
-                case "ClientHasJoined":
+                case "client-has-joined":
                     this.log("A client has joined: ", message.payload);
                     break;
-                case "ClientHasLeft":
+                case "client-has-left":
                     this.log("A client has left: ", message.payload)
                     break;
                 default:
@@ -90,7 +90,7 @@ module Kosy {
             window.addEventListener("message", (event: MessageEvent<ServerToClientMessage<GoogleDriveIntegrationMessage>>) => {
                 this.receiveIncomingMessage(event.data);
             });
-            this.sendOutgoingMessage({ type: "ReadyAndListening", payload: {} });
+            this.sendOutgoingMessage({ type: "ready-and-listening", payload: {} });
         }
     }
 }
