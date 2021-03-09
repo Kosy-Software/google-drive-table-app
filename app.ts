@@ -40,8 +40,8 @@ module Kosy {
         public receiveIncomingMessage (message: ServerToClientMessage<GoogleDriveIntegrationMessage>) {
             switch (message.type) {
                 case "ReceiveInitialInfo":
-                    this.currentClient = message.payload.currentClient;
-                    this.initializer = message.payload.initializer;
+                    this.currentClient = message.payload.clients[message.payload.currentClientUuid];
+                    this.initializer = message.payload.clients[message.payload.initializerClientUuid];
                     this.log("Received initialization info: ", message.payload);
                     if (this.currentClient.clientUuid == this.initializer.clientUuid) {
                         let picker = document.getElementById("picking");
