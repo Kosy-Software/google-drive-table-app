@@ -4,7 +4,7 @@ module Kosy {
     class StartupParameters {}
 
     type GoogleDriveUrlHasChanged = {
-        type: "GoogleDriveUrlHasChanged";
+        type: "google-drive-changed";
         payload: string;
     }
 
@@ -26,7 +26,7 @@ module Kosy {
 
         private processIncomingMessage(message: GoogleDriveIntegrationMessage) {
             switch (message.type) {
-                case "GoogleDriveUrlHasChanged":
+                case "google-drive-changed":
                     document.getElementById("picking").hidden = true;
                     document.getElementById("waiting").hidden = true; 
                     let iframe = document.getElementById("viewing") as HTMLIFrameElement;
@@ -51,7 +51,7 @@ module Kosy {
                             let url = (event.currentTarget as HTMLInputElement).value;
                             this.sendOutgoingMessage({ 
                                 type: "relay-message", 
-                                payload: { type: "GoogleDriveUrlHasChanged", payload: url } 
+                                payload: { type: "google-drive-changed", payload: url } 
                             });
                         }
                         document.getElementById("google-button").onchange = (event: Event) => {
