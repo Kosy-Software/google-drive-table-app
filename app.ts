@@ -32,7 +32,6 @@ module Kosy {
                     let iframe = document.getElementById("viewing") as HTMLIFrameElement;
                     //TODO: verify if it's a valid google docs url -> if not -> discard message
                     iframe.src = message.payload;
-                    iframe.sandbox.value = "";
                     iframe.hidden = false;
             }
         }
@@ -46,7 +45,7 @@ module Kosy {
                     if (this.currentClient.clientUuid == this.initializer.clientUuid) {
                         let picker = document.getElementById("picking");
                         picker.hidden = false;
-                        document.getElementById("google-input").onchange = (event: Event) => {
+                        document.getElementById("google-input").oninput = (event: Event) => {
                             //First draft -> needs fine-tuning
                             let url = (event.currentTarget as HTMLInputElement).value;
                             this.sendOutgoingMessage({ 
