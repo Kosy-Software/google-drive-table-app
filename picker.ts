@@ -8,34 +8,45 @@ module Kosy {
     //(this is how google recommends the picker is implemented)
     export class GoogleDrivePicker {
         public async start() {
-            //Loads the authentication scripts google needs
-            await new Promise((resolve, reject) => {
-                gapi.load("client:auth2", (callback) => resolve(callback));
-            });
-
-            //Initializes and shows a "log in with your google account" dialog
-            await gapi.client.init({
-                clientId: client_id,
-                scope: "https://www.googleapis.com/auth/drive.file"
-            });
-            let authResult: GoogleApiOAuth2TokenObject = gapi.client.getToken();
+            let authResult = await this.authorizeAppForGoogleDrive();
 
             //If the user wasn't authorized, close the pop-up
             if (!authResult || authResult.error) {
                 window.close();
             }
 
-            //Load the picker script
+            let picker = await this.createPicker(authResult.access_token);
+
+            //Makes the picker appear on-screen
+            picker.setVisible(true);
+        }
+
+        private async authorizeAppForGoogleDrive() {
+            //Load the authentication scripts from the google api (gapi)
+            await new Promise((resolve, reject) => {
+                gapi.load("client:auth2", (callback) => resolve(callback));
+            });
+
+            //Initialize and show a "log in with your google account" dialog (if necessary)
+            await gapi.client.init({
+                clientId: client_id,
+                scope: "https://www.googleapis.com/auth/drive.file"
+            });
+
+            return gapi.client.getToken();
+        }
+
+        private async createPicker(accessToken: string) {
+            //Load the picker script from the google api (gapi)
             await new Promise ((resolve, reject) =>{
                 gapi.load("picker", (callback) => resolve(callback));
             });
 
             //Use the google pickerbuilder to generate the picker -> 
-            let picker = 
-                new google.picker.PickerBuilder()
+            return new google.picker.PickerBuilder()
                     //Filters the view for documents
                     .addView(google.picker.ViewId.DOCS)
-                    .setOAuthToken(authResult.access_token)
+                    .setOAuthToken(accessToken)
                     .setDeveloperKey(developerKey)
                     //You need to set up the origin, otherwise the iframe doesn't have permission to be shown
                     .setOrigin(`${window.location.protocol}//${window.location.host}`)
@@ -56,11 +67,9 @@ module Kosy {
                         }
                     })
                     .build();
-
-            //Makes the picker appear on-screen
-            picker.setVisible(true);
         }
 
+        //Sends a message back to the main app
         private sendMessage (relayMessage: FilePickerMessage) {
             (window.opener as Window).postMessage(relayMessage, "*");
         }    
