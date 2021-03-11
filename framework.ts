@@ -74,7 +74,7 @@ export interface ClientHasJoined {
     payload: ClientInfo
 }
 
-export type ServerToClientMessage<T> =
+export type KosyToIntegrationMessage<T> =
     | ReceiveInitialInfo
     | ClientHasJoined
     | ClientHasLeft
@@ -90,6 +90,6 @@ export interface RelayMessage<T> {
     payload: T
 }
 
-export type ClientToServerMessage<T> =
+export type IntegrationToKosyMessage<T> =
     | ReadyAndListening
     | RelayMessage<T>
