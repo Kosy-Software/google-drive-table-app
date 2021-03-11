@@ -4,10 +4,10 @@
 /// <reference types="./frameworkmessages" />
 /// <reference types="./pickermessages" />
 
-module Kosy {
+module Kosy.Integration {
     class StartupParameters {}
 
-    export class GoogleDriveIntegration {
+    export class GoogleDriveApp {
         private kosyClient: Window;
         private currentClient: ClientInfo;
         private initializer: ClientInfo;
@@ -144,4 +144,4 @@ module Kosy {
     }
 }
 
-new Kosy.GoogleDriveIntegration().start({});
+new Kosy.Integration.GoogleDriveApp().start({});

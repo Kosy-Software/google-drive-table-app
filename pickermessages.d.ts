@@ -1,13 +1,15 @@
-type FilePickerMessage = 
-    | FilePicked 
-    | FilePickerClosed
+declare namespace Kosy.Integration {
+    type FilePickerMessage = 
+        | FilePicked 
+        | FilePickerClosed
 
-interface FilePicked {
-    type: "file-picked",
-    payload: string
-}
+    interface FilePicked {
+        type: "file-picked",
+        payload: string
+    }
 
-interface FilePickerClosed {
-    type: "file-picker-closed",
-    payload: {}
+    interface FilePickerClosed {
+        type: "file-picker-closed",
+        payload: {}
+    }
 }

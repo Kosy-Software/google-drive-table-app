@@ -1,6 +1,6 @@
 /// <reference types="./pickermessages" />
 
-module Kosy {
+module Kosy.Integration {
     const developerKey = "AIzaSyCSV8-5iNEVGubHa83iskEhwSbkO0nBmEk";
     const client_id = "1055348097262-umvi6mnq47jh9d6io4ha1s49e4hln03p.apps.googleusercontent.com";
 
@@ -76,4 +76,4 @@ module Kosy {
     }
 }
 
-new Kosy.GoogleDrivePicker().start();
+new Kosy.Integration.GoogleDrivePicker().start();
