@@ -3,11 +3,6 @@ export interface FilePicked {
     payload: string
 }
 
-export interface FilePickerCanceled {
-    type: "file-picker-canceled",
-    payload: {}
-}
-
 export interface FilePickerClosed {
     type: "file-picker-closed",
     payload: {}
@@ -15,5 +10,4 @@ export interface FilePickerClosed {
 
 export type FilePickerMessage = 
     | FilePicked 
-    | FilePickerCanceled 
     | FilePickerClosed

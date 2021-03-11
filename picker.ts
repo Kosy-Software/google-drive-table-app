@@ -7,10 +7,6 @@ module Kosy {
     //The google driver picker wraps google's drive picker with extra information and message passing 
     //(this is how google recommends the picker is implemented)
     export class GoogleDrivePicker {
-        private sendMessage (relayMessage: FilePickerMessage) {
-            (window.opener as Window).postMessage(relayMessage, "*");
-        }
-
         public async start() {
             //Loads the authentication scripts google needs
             await new Promise((resolve, reject) => {
@@ -24,17 +20,17 @@ module Kosy {
             });
             let authResult: GoogleApiOAuth2TokenObject = gapi.client.getToken();
 
-            //If the user wasn't authorized, cancel picking and close the pop-up
+            //If the user wasn't authorized, close the pop-up
             if (!authResult || authResult.error) {
-                this.sendMessage({ type: "file-picker-canceled", payload: {} });
                 window.close();
             }
 
-            //This loads the picker
+            //Load the picker script
             await new Promise ((resolve, reject) =>{
                 gapi.load("picker", (callback) => resolve(callback));
             });
-            //Google provides a builder for the google drive picker -> 
+
+            //Use the google pickerbuilder to generate the picker -> 
             let picker = 
                 new google.picker.PickerBuilder()
                     //Filters the view for documents
@@ -54,18 +50,21 @@ module Kosy {
                             //Close the pop-up
                             window.close();
                         }
-                        //If cancel was clicked, send cancel to the main app, and close the pop-up
+                        //If cancel was clicked, close the pop-up
                         if (data[google.picker.Response.ACTION] == google.picker.Action.CANCEL) {
-                            this.sendMessage({ type: "file-picker-canceled", payload: {} });
                             window.close();
                         }
                     })
                     .build();
 
+            //Makes the picker appear on-screen
             picker.setVisible(true);
         }
-    }
 
+        private sendMessage (relayMessage: FilePickerMessage) {
+            (window.opener as Window).postMessage(relayMessage, "*");
+        }    
+    }
 }
 
 new Kosy.GoogleDrivePicker().start();

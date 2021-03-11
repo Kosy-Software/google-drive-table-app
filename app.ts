@@ -24,8 +24,60 @@ module Kosy {
             }
         }
 
-        private log (...message: any) {
-            console.log(`${this.currentClient.clientName} logged: "`, ...message);
+        //Starts the integration
+        public start (params: StartupParameters): void {
+            //This sets up the message listener, the most important part of every integration
+            window.addEventListener("message", (event: MessageEvent<KosyToIntegrationMessage<GoogleDriveIntegrationMessage>>) => {
+                this.receiveMessage(event.data);
+            });
+            //This sends the "ready and listening" message so the kosy client knows the integration has started properly
+            this.sendMessage({ type: "ready-and-listening", payload: {} });
+        }
+
+        //Messages that flow to the main app get processed here
+        //Note: For larger apps a separate message processor class might be required, but for this perticular app, that might be overengineering
+        public receiveMessage (message: FilePickerMessage | KosyToIntegrationMessage<GoogleDriveIntegrationMessage>) {
+            switch (message.type) {
+                case "receive-initial-info":
+                    //Sets up the initial information, for the google drive integration, it's important to know who started it
+                    this.currentClient = message.payload.clients[message.payload.currentClientUuid];
+                    this.initializer = message.payload.clients[message.payload.initializerClientUuid];
+                    this.log("Received initialization info: ", message.payload);
+                    if (this.currentClient.clientUuid == this.initializer.clientUuid) {
+                        this.openGoogleDrivePicker();
+                    } else {
+                        this.showWaiting();
+                    }
+                    break;
+                case "receive-message":
+                    //A message was received from the kosy client -> process it
+                    this.log("Received message: ", message.payload);
+                    this.processIntegrationMessage(message.payload);
+                    break;
+                case "client-has-joined":
+                    //TODO?
+                    this.log("A client has joined: ", message.payload);
+                    break;
+                case "client-has-left":
+                    //TODO?
+                    this.log("A client has left: ", message.payload)
+                    break;
+                case "file-picked":
+                    //A file was picked -> send it to the other kosy clients
+                    //TODO: validate file's url
+                    this.sendMessage({ type: "relay-message", payload: { type: "google-drive-changed", payload: message.payload } });
+                    this.fileWasPicked = true;
+                    break;
+                case "file-picker-closed":
+                    //If no file was picked and the file picker was closed or canceled -> kill the integration
+                    if (!this.fileWasPicked) {
+                        //TODO: send close integration
+                        alert("No file was picked, shutting down integration...");
+                        break;
+                    }
+                default:
+                    break;
+            }
         }
 
         //Sends a message to the kosy client
@@ -87,61 +139,8 @@ module Kosy {
             waitingElement.hidden = false;
         }
 
-        //Messages that flow to the main app get processed here
-        //Note: For larger apps a separate message processor class might be required, but for this perticular app, that might be overengineering
-        public receiveMessage (message: FilePickerMessage | KosyToIntegrationMessage<GoogleDriveIntegrationMessage>) {
-            switch (message.type) {
-                case "receive-initial-info":
-                    //Sets up the initial information, for the google drive integration, it's important to know who started it
-                    this.currentClient = message.payload.clients[message.payload.currentClientUuid];
-                    this.initializer = message.payload.clients[message.payload.initializerClientUuid];
-                    this.log("Received initialization info: ", message.payload);
-                    if (this.currentClient.clientUuid == this.initializer.clientUuid) {
-                        this.openGoogleDrivePicker();
-                    } else {
-                        this.showWaiting();
-                    }
-                    break;
-                case "receive-message":
-                    //A message was received from the kosy client -> process it
-                    this.log("Received message: ", message.payload);
-                    this.processIntegrationMessage(message.payload);
-                    break;
-                case "client-has-joined":
-                    //TODO?
-                    this.log("A client has joined: ", message.payload);
-                    break;
-                case "client-has-left":
-                    //TODO?
-                    this.log("A client has left: ", message.payload)
-                    break;
-                case "file-picked":
-                    //A file was picked -> send it to the other kosy clients
-                    //TODO: validate file's url
-                    this.sendMessage({ type: "relay-message", payload: { type: "google-drive-changed", payload: message.payload } });
-                    this.fileWasPicked = true;
-                    break;
-                case "file-picker-closed":
-                case "file-picker-canceled":
-                    //If no file was picked and the file picker was closed or canceled -> kill the integration
-                    if (!this.fileWasPicked) {
-                        //TODO: send close integration
-                        alert("No file was picked, shutting down integration...");
-                        break;
-                    }
-                default:
-                    break;
-            }
-        }
-
-        //Starts the integration (might be unnecessary, maybe move to the constructor?)
-        public start (params: StartupParameters): void {
-            //This sets up the message listener, the most important part of every integration
-            window.addEventListener("message", (event: MessageEvent<KosyToIntegrationMessage<GoogleDriveIntegrationMessage>>) => {
-                this.receiveMessage(event.data);
-            });
-            //This sends the "ready and listening" message so the kosy client knows the integration has started properly
-            this.sendMessage({ type: "ready-and-listening", payload: {} });
+        private log (...message: any) {
+            console.log(`${this.currentClient.clientName} logged: "`, ...message);
         }
     }
 }
