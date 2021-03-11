@@ -25,7 +25,7 @@ module Kosy {
         }
 
         private log (...message: any) {
-            console.log(this.currentClient.clientName + " log: ", ...message);
+            console.log(`${this.currentClient.clientName} logged: "`, ...message);
         }
 
         //Sends a message to the kosy client
@@ -42,7 +42,7 @@ module Kosy {
                     let iframe = document.getElementById("viewing") as HTMLIFrameElement;
                     iframe.src = message.payload;
                     iframe.style.width = "100%";
-                    iframe.style.height = this.kosyClient[0].innerHeight - 30 + "px";
+                    iframe.style.height = `${this.kosyClient[0].innerHeight - 30}px`;
                     iframe.hidden = false;
                     break;
                 default:
@@ -83,7 +83,7 @@ module Kosy {
         //Shows "<username> is picking a file"
         private showWaiting() {
             let waitingElement = document.getElementById("waiting");
-            waitingElement.innerHTML = this.initializer.clientName + " is picking a file";
+            waitingElement.innerHTML = `${this.initializer.clientName} is picking a file`;
             waitingElement.hidden = false;
         }
 

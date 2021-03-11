@@ -42,7 +42,7 @@ module Kosy {
                     .setOAuthToken(authResult.access_token)
                     .setDeveloperKey(developerKey)
                     //You need to set up the origin, otherwise the iframe doesn't have permission to be shown
-                    .setOrigin(window.location.protocol + "//" + window.location.host)
+                    .setOrigin(`${window.location.protocol}//${window.location.host}`)
                     .setCallback((data: any) => {
                         //If a document was picked
                         if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
