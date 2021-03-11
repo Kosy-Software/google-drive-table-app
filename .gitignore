@@ -1,1 +1,4 @@
 *.js
+settings.json
+/node_modules
+/.vs

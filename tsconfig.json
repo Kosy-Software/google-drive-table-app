@@ -1,11 +1,14 @@
 {
     "compilerOptions": {
-      "noImplicitAny": true,
-      "removeComments": true,
-      "preserveConstEnums": true,
-      "sourceMap": false
+        "target": "ES6",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": false,
+        "types": [ "google.picker" ]
     },
     "files": [
-      "app.ts"
+      "app.ts",
+      "debugger.ts"
     ]
 }
