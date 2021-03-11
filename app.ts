@@ -81,6 +81,7 @@ module Kosy.Integration.GoogleDrive {
 
         //Sends a message to the kosy client
         public sendMessage (message: IntegrationToKosyMessage<GoogleDriveIntegrationMessage>) {
+            //TODO: fix message origin, we probably only want to send messages to a certain url?
             this.kosyClient.postMessage(message, "*");
         }
 

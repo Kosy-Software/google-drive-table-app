@@ -71,7 +71,7 @@ module Kosy.Integration.GoogleDrive {
 
         //Sends a message back to the main app
         private sendMessage (relayMessage: FilePickerMessage) {
-            (window.opener as Window).postMessage(relayMessage, "*");
+            (window.opener as Window).postMessage(relayMessage, window.location.origin);
         }    
     }
 }
