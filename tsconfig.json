@@ -9,6 +9,6 @@
     },
     "files": [
       "app.ts",
-      "debugger.ts"
+      "picker.ts"
     ]
 }
