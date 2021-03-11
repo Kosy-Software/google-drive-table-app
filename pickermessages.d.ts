@@ -1,13 +1,13 @@
-export type FilePickerMessage = 
+type FilePickerMessage = 
     | FilePicked 
     | FilePickerClosed
 
-export interface FilePicked {
+interface FilePicked {
     type: "file-picked",
     payload: string
 }
 
-export interface FilePickerClosed {
+interface FilePickerClosed {
     type: "file-picker-closed",
     payload: {}
 }

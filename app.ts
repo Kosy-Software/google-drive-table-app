@@ -1,9 +1,8 @@
 /// <reference types="@types/google.picker" />
 /// <reference types="@types/gapi" />
-
-import { ClientInfo, KosyToIntegrationMessage, IntegrationToKosyMessage } from './framework';
-import { FilePickerMessage } from './pickermessages';
-import { GoogleDriveIntegrationMessage } from "./appmessages";
+/// <reference types="./appmessages" />
+/// <reference types="./frameworkmessages" />
+/// <reference types="./pickermessages" />
 
 module Kosy {
     class StartupParameters {}

@@ -1,4 +1,4 @@
-import { FilePickerMessage } from './pickermessages';
+/// <reference types="./pickermessages" />
 
 module Kosy {
     const developerKey = "AIzaSyCSV8-5iNEVGubHa83iskEhwSbkO0nBmEk";

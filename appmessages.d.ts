@@ -1,7 +1,7 @@
-export type GoogleDriveIntegrationMessage =
+type GoogleDriveIntegrationMessage =
     | GoogleDriveUrlHasChanged
 
-export interface GoogleDriveUrlHasChanged {
+interface GoogleDriveUrlHasChanged {
     type: "google-drive-changed";
     payload: string;
 }
