@@ -1,7 +1,7 @@
 /// <reference types="@types/google.picker" />
 /// <reference types="@types/gapi" />
 
-import { ClientInfo, ServerToClientMessage, ClientToServerMessage } from './framework';
+import { ClientInfo, KosyToIntegrationMessage, IntegrationToKosyMessage } from './framework';
 import { FilePickerMessage } from './pickermessages';
 import { GoogleDriveIntegrationMessage } from "./appmessages";
 
@@ -29,12 +29,12 @@ module Kosy {
         }
 
         //Sends a message to the kosy client
-        public sendMessage (message: ClientToServerMessage<GoogleDriveIntegrationMessage>) {
+        public sendMessage (message: IntegrationToKosyMessage<GoogleDriveIntegrationMessage>) {
             this.kosyClient.postMessage(message, "*");
         }
 
         //Processes a message that came in via the kosy client
-        private processIncomingMessage(message: GoogleDriveIntegrationMessage) {
+        private processIntegrationMessage(message: GoogleDriveIntegrationMessage) {
             switch (message.type) {
                 case "google-drive-changed":
                     document.getElementById("picking").hidden = true;
@@ -88,8 +88,8 @@ module Kosy {
         }
 
         //Messages that flow to the main app get processed here
-        //Note: For larger apps a separate message processor class might be required, but that would be overengineering for this app
-        public receiveMessage (message: FilePickerMessage | ServerToClientMessage<GoogleDriveIntegrationMessage>) {
+        //Note: For larger apps a separate message processor class might be required, but for this perticular app, that might be overengineering
+        public receiveMessage (message: FilePickerMessage | KosyToIntegrationMessage<GoogleDriveIntegrationMessage>) {
             switch (message.type) {
                 case "receive-initial-info":
                     //Sets up the initial information, for the google drive integration, it's important to know who started it
@@ -105,7 +105,7 @@ module Kosy {
                 case "receive-message":
                     //A message was received from the kosy client -> process it
                     this.log("Received message: ", message.payload);
-                    this.processIncomingMessage(message.payload);
+                    this.processIntegrationMessage(message.payload);
                     break;
                 case "client-has-joined":
                     //TODO?
@@ -137,7 +137,7 @@ module Kosy {
         //Starts the integration (might be unnecessary, maybe move to the constructor?)
         public start (params: StartupParameters): void {
             //This sets up the message listener, the most important part of every integration
-            window.addEventListener("message", (event: MessageEvent<ServerToClientMessage<GoogleDriveIntegrationMessage>>) => {
+            window.addEventListener("message", (event: MessageEvent<KosyToIntegrationMessage<GoogleDriveIntegrationMessage>>) => {
                 this.receiveMessage(event.data);
             });
             //This sends the "ready and listening" message so the kosy client knows the integration has started properly
