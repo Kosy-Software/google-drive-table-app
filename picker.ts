@@ -1,12 +1,12 @@
 /// <reference types="./pickermessages" />
 
-module Kosy.Integration {
+module Kosy.Integration.GoogleDrive {
     const developerKey = "AIzaSyCSV8-5iNEVGubHa83iskEhwSbkO0nBmEk";
     const client_id = "1055348097262-umvi6mnq47jh9d6io4ha1s49e4hln03p.apps.googleusercontent.com";
 
     //The google driver picker wraps google's drive picker with extra information and message passing 
     //(this is how google recommends the picker is implemented)
-    export class GoogleDrivePicker {
+    export class Picker {
         public async start() {
             let authResult = await this.authorizeAppForGoogleDrive();
 
@@ -76,4 +76,4 @@ module Kosy.Integration {
     }
 }
 
-new Kosy.Integration.GoogleDrivePicker().start();
+new Kosy.Integration.GoogleDrive.Picker().start();
