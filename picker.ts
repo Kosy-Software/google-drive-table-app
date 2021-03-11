@@ -1,8 +1,8 @@
 /// <reference types="./pickermessages" />
 
 module Kosy.Integration.GoogleDrive {
-    const developerKey = "AIzaSyCSV8-5iNEVGubHa83iskEhwSbkO0nBmEk";
-    const client_id = "1055348097262-umvi6mnq47jh9d6io4ha1s49e4hln03p.apps.googleusercontent.com";
+    const GOOGLE_DEVELOPER_KEY = "AIzaSyCSV8-5iNEVGubHa83iskEhwSbkO0nBmEk";
+    const GOOGLE_CLIENT_ID = "1055348097262-umvi6mnq47jh9d6io4ha1s49e4hln03p.apps.googleusercontent.com";
 
     //The google driver picker wraps google's drive picker with extra information and message passing 
     //(this is how google recommends the picker is implemented)
@@ -29,7 +29,7 @@ module Kosy.Integration.GoogleDrive {
 
             //Initialize and show a "log in with your google account" dialog (if necessary)
             await gapi.client.init({
-                clientId: client_id,
+                clientId: GOOGLE_CLIENT_ID,
                 scope: "https://www.googleapis.com/auth/drive.file"
             });
 
@@ -47,7 +47,7 @@ module Kosy.Integration.GoogleDrive {
                     //Filters the view for documents
                     .addView(google.picker.ViewId.DOCS)
                     .setOAuthToken(accessToken)
-                    .setDeveloperKey(developerKey)
+                    .setDeveloperKey(GOOGLE_DEVELOPER_KEY)
                     //You need to set up the origin, otherwise the iframe doesn't have permission to be shown
                     .setOrigin(`${window.location.protocol}//${window.location.host}`)
                     .setCallback((data: any) => {
