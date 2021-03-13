@@ -28,6 +28,7 @@ Since google doesn't like you running their API's on localhost (don't ask me why
         "client_id": "The Client Id you created in step 6"
     }
 }
+8) Wait for about 15 to 30 minutes before google accepts the token...
 
 ## To actually run the code
 1) When using visual studio code, install the live server plugin for ease of access.
