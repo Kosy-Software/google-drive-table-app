@@ -120,7 +120,7 @@ module Kosy.Integration.GoogleDrive {
             //This sets up the onclick for the "Click me to view google drive" button
             document.getElementById("google-button").onclick = async (event: Event) => {
                 this.log("Picker started")
-                var picker = window.open("picker.html", "_blank", "fullscreen=1,menubar=0,location=0,directories=0,toolbar=0,titlebar=0");
+                var picker = window.open("picker", "_blank", "fullscreen=1,menubar=0,location=0,directories=0,toolbar=0,titlebar=0");
                 //If it's good enough for facebook, it's good enough for us :D
                 var timer = setInterval(() => {
                     if(picker.closed) {

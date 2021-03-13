@@ -1,27 +1,31 @@
 /// <reference types="./pickermessages" />
 
 module Kosy.Integration.GoogleDrive {
-    const GOOGLE_DEVELOPER_KEY = "AIzaSyCSV8-5iNEVGubHa83iskEhwSbkO0nBmEk";
-    const GOOGLE_CLIENT_ID = "1055348097262-umvi6mnq47jh9d6io4ha1s49e4hln03p.apps.googleusercontent.com";
+    interface PickerParams {
+        google: {
+            "developer_key": string,
+            "client_id": string
+        }
+    }
 
     //The google driver picker wraps google's drive picker with extra information and message passing 
     //(this is how google recommends the picker is implemented)
     export class Picker {
-        public async start() {
-            let authResult = await this.authorizeAppForGoogleDrive();
+        public async start(params: PickerParams) {
+            let authResult = await this.authorizeAppForGoogleDrive(params.google.client_id);
 
             //If the user wasn't authorized, close the pop-up
             if (!authResult || authResult.error) {
                 window.close();
             }
 
-            let picker = await this.createPicker(authResult.access_token);
+            let picker = await this.createPicker(authResult.access_token, params.google.developer_key);
 
             //Makes the picker appear on-screen
             picker.setVisible(true);
         }
 
-        private async authorizeAppForGoogleDrive() {
+        private async authorizeAppForGoogleDrive(googleClientId: string) {
             //Load the authentication scripts from the google api (gapi)
             await new Promise((resolve, reject) => {
                 gapi.load("client:auth2", (callback) => resolve(callback));
@@ -29,14 +33,14 @@ module Kosy.Integration.GoogleDrive {
 
             //Initialize and show a "log in with your google account" dialog (if necessary)
             await gapi.client.init({
-                clientId: GOOGLE_CLIENT_ID,
+                clientId: googleClientId,
                 scope: "https://www.googleapis.com/auth/drive.file"
             });
 
             return gapi.client.getToken();
         }
 
-        private async createPicker(accessToken: string) {
+        private async createPicker(oauthToken: string, googleDeveloperKey: string) {
             //Load the picker script from the google api (gapi)
             await new Promise ((resolve, reject) =>{
                 gapi.load("picker", (callback) => resolve(callback));
@@ -46,8 +50,8 @@ module Kosy.Integration.GoogleDrive {
             return new google.picker.PickerBuilder()
                     //Filters the view for documents
                     .addView(google.picker.ViewId.DOCS)
-                    .setOAuthToken(accessToken)
-                    .setDeveloperKey(GOOGLE_DEVELOPER_KEY)
+                    .setOAuthToken(oauthToken)
+                    .setDeveloperKey(googleDeveloperKey)
                     //You need to set up the origin, otherwise the iframe doesn't have permission to be shown
                     .setOrigin(`${window.location.protocol}//${window.location.host}`)
                     .setCallback((data: any) => {
@@ -76,4 +80,7 @@ module Kosy.Integration.GoogleDrive {
     }
 }
 
-new Kosy.Integration.GoogleDrive.Picker().start();
+//Fetches the settings, then starts the picker
+fetch("settings.json")
+.then(response => response.json())
+.then(json => new Kosy.Integration.GoogleDrive.Picker().start(json));
