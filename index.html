@@ -4,16 +4,22 @@
         <title>Kosy - Google docs plugin</title>
         <meta charset="utf-8">
         <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-        <script type="module" src="app.js" defer></script>
+        <script type="module" src="src/app.js" defer></script>
     </head>
-    <body>
-        <div id="waiting" hidden>
-        </div>
-        <div id="picking" hidden>
-            <input type="text" id="google-input">
-            <button id="google-button">Click me to view google drive</button>
-        </div>
-        <iframe id="viewing" iframe src="" frameborder="0" hidden>
-        </iframe>
+    <body style="margin: 0; overflow-y: hidden;">
+        <template id="waiting">
+            <div></div>
+        </template>
+        <template id="picking">
+            <div>
+                <input type="text" id="google-input">
+                <button id="google-button">Click me to view google drive</button>
+            </div>
+        </template>
+        <template id="viewing">
+            <iframe src="" frameborder="0" width="100%">
+            </iframe>    
+        </template>
+        <div id="root"></div>
     </body>
 </html>

@@ -5,10 +5,11 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": false,
-        "types": [ "google.picker" ]
+        "types": [ "google.picker", "gapi", "gapi.auth2" ],
+        "allowSyntheticDefaultImports": true
     },
     "files": [
-      "app.ts",
-      "picker.ts"
+      "src/app.ts",
+      "src/picker.ts"
     ]
 }
