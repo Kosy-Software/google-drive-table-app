@@ -9,7 +9,7 @@ Since google doesn't like you running their API's on localhost (don't ask me why
 2) Open the hosts file "c:\Windows\System32\drivers\etc\hosts"
 3) Add an alias to 127.0.0.1, for the rest of this example, I'll use "dev.local.com"
 
-### For mac
+### For linux/mac
 1) Run the command "sudo nano /etc/hosts"
 2) Add an alias to 127.0.0.1, for the rest of this example, I'll use "dev.local.com"
 
