@@ -42,7 +42,7 @@ module Kosy.Integration.GoogleDrive {
             let authorizeResponse: gapi.auth2.AuthResponse = await new Promise((resolve, reject) => {
                 try {
                     gapi.auth2.init({
-                        client_id: googleClientId,
+                        client_id: googleClientId,                        
                         scope: SCOPE,
                         fetch_basic_profile: false
                     });
@@ -110,7 +110,7 @@ module Kosy.Integration.GoogleDrive {
 
         //Sends a message back to the main app
         private sendMessage (filePickerMessage: FilePickerMessage) {
-            (window.opener as Window).postMessage({ type: "receive-message", payload: filePickerMessage }, window.location.origin);
+            (window.opener as Window).postMessage(filePickerMessage, window.location.origin);
         }    
     }
 }

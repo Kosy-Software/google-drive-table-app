@@ -1,16 +1,20 @@
 import { FilePickerMessage } from './pickermessages';
 
+/// Messages that are relayed to all of the clients
 export type IntegrationMessage =
-    | ReceiveGoogleDriveUrlHasChanged
+    | ReceiveGoogleDriveUrl
+
+/// Internal component messages
+export type ComponentMessage =
     | GoogleDriveUrlHasChanged
     | FilePickerMessage
 
-export interface ReceiveGoogleDriveUrlHasChanged {
-    type: "receive-google-drive-changed";
+export interface ReceiveGoogleDriveUrl {
+    type: "receive-google-drive-url";
     payload: string;
 }
 
 export interface GoogleDriveUrlHasChanged {
-    type: "google-drive-changed";
+    type: "google-drive-url-changed";
     payload: string;
 }

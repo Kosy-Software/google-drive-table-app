@@ -1,22 +1,28 @@
-import { IntegrationState } from "../lib/integrationState.js";
-import { IntegrationMessage } from '../lib/integrationmessages.js';
-import { renderViewingStateView } from './renderViewingStateView.js';
-import { renderPickingStateView } from './renderPickingStateView.js';
-import { renderWaitingStateView } from './renderWaitingStateView.js';
+import { ComponentState } from "../lib/integrationState.js";
+import { ComponentMessage } from '../lib/integrationmessages.js';
+import { renderViewingState } from './renderViewingState.js';
+import { renderPickingState } from './renderPickingState.js';
+import { renderWaitingState } from './renderWaitingState.js';
 
-//Poor man's react, no need to import (and maintain) the entire reactjs library and its customs for this small app...
-export function render(state: IntegrationState, dispatch: ((msg: IntegrationMessage) => void)): void {
+type Dispatch = (msg: ComponentMessage) => void;
+type RenderView = (state: ComponentState, dispatch: Dispatch) => HTMLElement;
+
+export function render (state: ComponentState, dispatch: Dispatch): void {
+    let renderView: RenderView;
+    if (state?.googleDriveUrl) {
+        renderView = renderViewingState;
+    } else if (state.currentClient.clientUuid == state.initializer.clientUuid) {
+        renderView = renderPickingState;
+    } else {
+        renderView = renderWaitingState;
+    }
+
+    //No need to import (and maintain) an entire component library and its customs for this small app...
+    //All of the states are cleanly defined
     let rootNode = document.getElementById("root");
     var emptyNode = rootNode.cloneNode(false);
+    //Clears the root node
     rootNode.parentNode.replaceChild(emptyNode, rootNode);
-    let view: HTMLElement;
-    if (state?.googleDriveUrl) {
-        view = renderViewingStateView (state, dispatch);
-    } else if (state.currentClient.clientUuid == state.initializer.clientUuid) {
-        view = renderPickingStateView (state, dispatch);
-    } else {
-        view = renderWaitingStateView (state, dispatch);
-    }
-    console.log(view);
-    emptyNode.appendChild(view);
+    //Appens the child to the root node
+    emptyNode.appendChild(renderView(state, dispatch));
 }

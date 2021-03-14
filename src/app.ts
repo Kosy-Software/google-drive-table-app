@@ -1,33 +1,27 @@
 /// <reference types="@types/google.picker" />
 /// <reference types="@types/gapi" />
 
-import { IntegrationMessage } from "./lib/integrationmessages";
-import { IntegrationState } from "./lib/integrationState";
+import { IntegrationMessage, ComponentMessage } from './lib/integrationmessages';
+import { IntegrationState } from './lib/integrationState';
 import { KosyToIntegrationMessage, IntegrationToKosyMessage } from './lib/kosymessages';
 import { render } from './views/renderState.js';
+import { openPopup } from './openPopup.js';
+import { ClientInfo } from './lib/kosyclient';
 
 module Kosy.Integration.GoogleDrive {
 
     class StartupParameters {}
 
     export class App {
-        private kosyClient: Window;
-        private state: IntegrationState = null;
-        
-        constructor () {
-            //TODO: make this into more of a "framework" thing
-            //we're initializing this integration for the kosy client (= this window's parent)
-            this.kosyClient = window.parent;
-            if (!this.kosyClient) {
-                //In stead of throwing, send a "kill the integration" message?
-                throw "This page is not meant to be ran stand-alone...";
-            }
-        }
+        private kosyClient: Window = window.parent;
+        private state: IntegrationState = { googleDriveUrl: null };
+        private initializer: ClientInfo;
+        private currentClient: ClientInfo;
 
         //Starts the integration
         public start (params: StartupParameters): void {
             //This sets up the message listener, the most important part of every integration
-            window.addEventListener("message", (event: MessageEvent<KosyToIntegrationMessage<IntegrationState, IntegrationMessage>>) => {
+            window.addEventListener("message", (event: MessageEvent<KosyToIntegrationMessage<IntegrationState, IntegrationMessage> | ComponentMessage>) => {
                 this.receiveMessage(event.data);
             });
             //This sends the "ready and listening" message so the kosy client knows the integration has started properly
@@ -36,22 +30,20 @@ module Kosy.Integration.GoogleDrive {
 
         //Messages that flow to the main app get processed here
         //Note: For larger apps a separate message processor class might be required, but for this perticular app, that might be overengineering
-        public receiveMessage (message: KosyToIntegrationMessage<IntegrationState, IntegrationMessage>) {
+        public receiveMessage (message: KosyToIntegrationMessage<IntegrationState, IntegrationMessage> | ComponentMessage) {
             switch (message.type) {
                 case "receive-initial-info":
                     //Sets up the initial information.
                     //For the google drive integration, it's important to know who started it, so we add it to the global state
                     let payload = message.payload;
-                    this.state = {
-                        googleDriveUrl: payload.currentIntegrationState?.googleDriveUrl,
-                        initializer: payload.clients[message.payload.initializerClientUuid],
-                        currentClient: payload.clients[message.payload.currentClientUuid]
-                    }
+                    this.initializer = payload.clients[message.payload.initializerClientUuid];
+                    this.currentClient = payload.clients[message.payload.currentClientUuid];
+                    this.state = payload.currentIntegrationState ?? this.state;
                     this.log("Received initialization info: ", message.payload);
-                    this.render()
+                    this.renderComponent();
                     break;
                 case "receive-message":
-                    //A message was received from the kosy client -> process it
+                    //A message was relayed from another integration client -> process it
                     this.log("Received integration message: ", message.payload);
                     this.processIntegrationMessage(message.payload);
                     break;
@@ -69,29 +61,38 @@ module Kosy.Integration.GoogleDrive {
                     this.sendMessage({ type: "receive-integration-state", payload: this.state });
                     break;
                 default:
+                    //Minor hack so the picker works properly (it's in a separate window unfortunately)
+                    this.processComponentMessage(message);
                     break;
             }
         }
 
         private processIntegrationMessage (message: IntegrationMessage) {
             switch (message.type) {
-                case "receive-google-drive-changed":
+                case "receive-google-drive-url":
                     this.state.googleDriveUrl = message.payload;
-                    this.render();
+                    this.renderComponent();
                     break;
-                case "google-drive-changed":
-                    this.sendMessage({ type: "relay-message", payload: { type: "receive-google-drive-changed", payload: message.payload } });
+            }
+        }
+
+        private processComponentMessage (message: ComponentMessage) {
+            switch (message.type) {
+                case "google-drive-url-changed":
+                    //Set the google drive url
+                    this.state.googleDriveUrl = message.payload;
+                    //Notify all other clients that the google drive url has changed
+                    this.sendMessage({ type: "relay-message", payload: { type: "receive-google-drive-url", payload: message.payload } });
                     break;
                 case "file-picker-closed":
+                    //We're already in a state where we have a google drive url -> ignore the message
                     if (this.state.googleDriveUrl) break;
 
-                    this.log(JSON.stringify(message));
-                    //If no file was picked and the file picker was closed or canceled -> self-end the integration
+                    //If the file picker was closed with a google drive url -> 
                     if (message.payload.googleDriveUrl) {
                         this.log("Google drive url picked: ", message.payload.googleDriveUrl);
-                        this.state.googleDriveUrl = message.payload.googleDriveUrl;
-                        this.sendMessage({ type: "relay-message", payload: { type: "receive-google-drive-changed", payload: message.payload.googleDriveUrl } });                        
-                    } else {
+                        this.processComponentMessage({ type: "google-drive-url-changed", payload: message.payload.googleDriveUrl });
+                    } else {                        
                         this.log("No google drive url picked, ending integration");
                         this.sendMessage({ type: "end-integration", payload: {} });
                     }
@@ -99,20 +100,11 @@ module Kosy.Integration.GoogleDrive {
                 case "file-picker-opened":
                     this.log("The file picker was opened");
 
-                    let popupWindow = (url: string, window: Window, width: number, height: number) => {
-                        const centerWindowY = window.outerHeight / 2 + window.screenY - ( height / 2);
-                        const centerWindowX = window.outerWidth / 2 + window.screenX - ( width / 2);
-                        return window.open(url, "_blank", `fullscreen=0,menubar=0,location=0,directories=0,toolbar=0,titlebar=0,width=${width},height=${height},top=${centerWindowY},left=${centerWindowX}`);
-                    }
-
-                    var picker = popupWindow("picker.html", window, 1024, 1024);
-                    //If it's good enough for facebook, it's good enough for us :D
-                    var timer = setInterval(() => {
-                        if (picker.closed) {
-                            clearInterval(timer);
-                            this.processIntegrationMessage({ type: "file-picker-closed", payload: {} });
-                        }
-                    }, 1000);    
+                    openPopup ("picker.html", { 
+                        onclose: () => this.processComponentMessage({ type: "file-picker-closed", payload: {} }),
+                        width: 1024,
+                        height: 1024
+                    });
                     break;
                 default:
                     break;
@@ -127,12 +119,16 @@ module Kosy.Integration.GoogleDrive {
         }
 
         //Poor man's react, so we don't need to fetch the entire react library for this tiny app...
-        private render () {
-            render(this.state, (message) => this.processIntegrationMessage(message));
+        private renderComponent () {
+            render({
+                googleDriveUrl: this.state.googleDriveUrl, 
+                currentClient: this.currentClient,
+                initializer: this.initializer
+            }, (message) => this.receiveMessage(message));
         }
 
         private log (...message: any) {
-            console.log(`${this.state?.currentClient?.clientName} logged: `, ...message);
+            console.log(`${this.currentClient?.clientName ?? "New user"} logged: `, ...message);
         }
     }
 }
