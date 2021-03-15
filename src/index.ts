@@ -4,8 +4,8 @@
 import { IntegrationMessage, ComponentMessage } from './lib/integrationmessages';
 import { IntegrationState } from './lib/integrationState';
 import { KosyToIntegrationMessage, IntegrationToKosyMessage } from './lib/kosymessages';
-import { render } from './views/renderState.js';
-import { openPopup } from './lib/openPopup.js';
+import { render } from './views/renderState';
+import { openPopup } from './lib/openPopup';
 import { ClientInfo } from './lib/kosyclient';
 import './styles/style.scss';
 

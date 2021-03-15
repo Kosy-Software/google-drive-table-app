@@ -115,14 +115,7 @@ module.exports = (env, options) => {
             rules: [
                 {
                     test: /\.ts?$/,
-                    use: [
-                        {
-                            loader: "ts-loader",
-                            options: {
-                                transpileOnly: false
-                            }
-                        }
-                    ],
+                    use: "ts-loader",
                     exclude: /node_modules/
                 },
                 {

@@ -1,8 +1,8 @@
-import { ComponentState } from "../lib/integrationState.js";
-import { ComponentMessage } from '../lib/integrationmessages.js';
-import { renderViewingState } from './renderViewingState.js';
-import { renderPickingState } from './renderPickingState.js';
-import { renderWaitingState } from './renderWaitingState.js';
+import { ComponentState } from "../lib/integrationState";
+import { ComponentMessage } from '../lib/integrationmessages';
+import { renderViewingState } from './renderViewingState';
+import { renderPickingState } from './renderPickingState';
+import { renderWaitingState } from './renderWaitingState';
 
 type Dispatch = (msg: ComponentMessage) => void;
 type RenderView = (state: ComponentState, dispatch: Dispatch) => HTMLElement;
