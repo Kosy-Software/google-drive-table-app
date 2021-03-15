@@ -1,4 +1,6 @@
 import { FilePickerMessage } from "./lib/pickermessages";
+import "./styles/style.scss";
+import settings from "./../settings.json";
 
 module Kosy.Integration.GoogleDrive {
     const SCOPE = "https://www.googleapis.com/auth/drive.file";
@@ -113,9 +115,5 @@ module Kosy.Integration.GoogleDrive {
             (window.opener as Window).postMessage(filePickerMessage, window.location.origin);
         }    
     }
+    new Picker().start(settings);
 }
-
-//Fetches the settings, then starts the picker
-fetch("settings.json")
-.then(response => response.json())
-.then(json => new Kosy.Integration.GoogleDrive.Picker().start(json));

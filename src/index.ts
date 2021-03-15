@@ -7,6 +7,7 @@ import { KosyToIntegrationMessage, IntegrationToKosyMessage } from './lib/kosyme
 import { render } from './views/renderState.js';
 import { openPopup } from './openPopup.js';
 import { ClientInfo } from './lib/kosyclient';
+import './styles/style.scss';
 
 module Kosy.Integration.GoogleDrive {
 
@@ -67,9 +68,10 @@ module Kosy.Integration.GoogleDrive {
             }
         }
 
-        private processIntegrationMessage (message: IntegrationMessage) {
+        private processIntegrationMessage (message: IntegrationMessage) {  
             switch (message.type) {
                 case "receive-google-drive-url":
+                    console.log("Received google drive url: ", message.payload);
                     this.state.googleDriveUrl = message.payload;
                     this.renderComponent();
                     break;
@@ -131,6 +133,6 @@ module Kosy.Integration.GoogleDrive {
             console.log(`${this.currentClient?.clientName ?? "New user"} logged: `, ...message);
         }
     }
-}
 
-new Kosy.Integration.GoogleDrive.App().start({});
+    new App().start({});
+}

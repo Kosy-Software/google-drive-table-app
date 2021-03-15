@@ -1,15 +1,17 @@
 {
     "compilerOptions": {
+        "moduleResolution": "Node",
         "target": "ES6",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": false,
         "types": [ "google.picker", "gapi", "gapi.auth2" ],
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true
     },
     "files": [
-      "src/app.ts",
+      "src/index.ts",
       "src/picker.ts"
     ]
 }
