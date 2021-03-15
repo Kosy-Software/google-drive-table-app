@@ -7,7 +7,6 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 const fs = require("fs");
 const devServerSettings = require("./settings.json").devServer;
-const { settings } = require("cluster");
 
 const getDevServerSslSettings = () => {
     if (!devServerSettings.ssl) return false;
