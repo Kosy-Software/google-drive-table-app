@@ -16,6 +16,21 @@ module Kosy.Integration.GoogleDrive {
     //The google driver picker wraps google's drive picker with extra information and message passing 
     //(this is how google recommends the picker is implemented)
     export class Picker {
+
+        public async start(params: PickerParams) {
+            let authResponse = await this.getAuthResponse(params.google.client_id);
+            //If the user wasn't authorized, close the pop-up
+            if (!authResponse) {
+                this.sendMessage({ type: "file-picker-closed", payload: { } });
+                window.close();
+            }
+
+            let picker = await this.createPicker(authResponse.access_token, params.google.api_key);
+
+            //Makes the picker appear on-screen
+            picker.setVisible(true);
+        }
+
         private async getAuthResponse(googleClientId: string) {
             //Fetch the google token from localstorage
             let authResponse = JSON.parse(localStorage.getItem("google_access_token") || "{}") as gapi.auth2.AuthResponse;
@@ -30,20 +45,6 @@ module Kosy.Integration.GoogleDrive {
                 localStorage.setItem("google_access_token", JSON.stringify(authResponse));
             }
             return authResponse;
-        }
-
-        public async start(params: PickerParams) {
-            let authResponse = await this.getAuthResponse(params.google.client_id);
-            //If the user wasn't authorized, close the pop-up
-            if (!authResponse) {
-                this.sendMessage({ type: "file-picker-closed", payload: { } });
-                window.close();
-            }
-
-            let picker = await this.createPicker(authResponse.access_token, params.google.api_key);
-
-            //Makes the picker appear on-screen
-            picker.setVisible(true);
         }
 
         private async authorizeAppForGoogleDrive(googleClientId: string): Promise<gapi.auth2.AuthResponse> {
