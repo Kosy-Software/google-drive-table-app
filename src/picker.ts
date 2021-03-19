@@ -11,12 +11,29 @@ module Kosy.Integration.GoogleDrive {
         }
     }
 
+    const JAN1970 = new Date("1970-01-01T00:00:00Z").getTime();
+
     //The google driver picker wraps google's drive picker with extra information and message passing 
     //(this is how google recommends the picker is implemented)
     export class Picker {
-        public async start(params: PickerParams) {
-            let authResponse = await this.authorizeAppForGoogleDrive(params.google.client_id);
+        private async getAuthResponse(googleClientId: string) {
+            //Fetch the google token from localstorage
+            let authResponse = JSON.parse(localStorage.getItem("google_access_token") || "{}") as gapi.auth2.AuthResponse;
 
+            //To determine if the token is still valid
+            //Add expiresAt to januari 1st 1970 (and subtract 1 minute as a safety margin)
+            let expirationDate = new Date(JAN1970 + (authResponse?.expires_at || 0) - 60000);
+
+            //If the auth response has expired - go fetch a new token
+            if (expirationDate < new Date()) {
+                authResponse = await this.authorizeAppForGoogleDrive(googleClientId);
+                localStorage.setItem("google_access_token", JSON.stringify(authResponse));
+            }
+            return authResponse;
+        }
+
+        public async start(params: PickerParams) {
+            let authResponse = await this.getAuthResponse(params.google.client_id);
             //If the user wasn't authorized, close the pop-up
             if (!authResponse) {
                 this.sendMessage({ type: "file-picker-closed", payload: { } });
