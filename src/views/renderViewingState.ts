@@ -5,7 +5,8 @@ import { ComponentMessage } from '../lib/integrationmessages';
 export function renderViewingState (state: ComponentState, dispatch: ((msg: ComponentMessage) => any)): HTMLElement {
     let viewingRoot = document.querySelector("#viewing") as HTMLTemplateElement;
     let viewingElement = viewingRoot.content.firstElementChild.cloneNode(true) as HTMLIFrameElement;
-    viewingElement.src = state.googleDriveUrl;
-    viewingElement.style.height = `${window.innerHeight}px`;
+    let iframe = viewingElement.querySelector("iframe");
+    iframe.src = state.googleDriveUrl;
+    iframe.style.height = `${window.innerHeight}px`;
     return viewingElement;
 }

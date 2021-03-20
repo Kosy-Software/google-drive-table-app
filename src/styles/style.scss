@@ -1,3 +1,5 @@
+$border-radius: 12px;
+
 .picker {
     height: 100% !important;
     width: 100% !important;
@@ -6,4 +8,76 @@
 
 body {
     overflow: hidden;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+.waiting {
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+
+    label {
+        display: block;
+    }
+
+    img {
+        margin-top: 15%;
+        max-width: 25%;
+        max-height: 25%;
+    }
+}
+
+.picking {
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    row-gap: 1em;
+    height: 100vh;
+    font-size: 16px;
+
+    h3 {
+        font-weight: 700;
+        text-align: center;
+        font-size: 24px;
+        margin: 0;
+    }
+
+    input {
+        background-color: #F1F2F5;
+        padding: 13px 13px 13px 13px;
+        border: none;
+        border-radius: $border-radius;
+        width: 200px;
+        margin-right: 10px;
+        text-align: center;
+    }
+
+    button {
+        color: white;
+        padding: 13px 13px 13px 16px;
+        background-color: #696DFF;
+        border-radius: $border-radius;
+        border: 0;
+        cursor: pointer;
+
+        &:disabled {
+            background-color: #F9F9F9;
+            color: #C9CED4;
+            cursor: not-allowed;
+        }
+
+        img {
+            position: fixed;
+            margin-top: 1px;
+            margin-left: 6px;
+            max-height: 13px;
+        }
+    }
+
+    p {
+        margin: 0;
+        height: 20px;
+        font-size: 16px;
+        text-align: center;
+    }
 }

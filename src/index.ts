@@ -8,6 +8,7 @@ import { render } from './views/renderState';
 import { openPopup } from './lib/openPopup';
 import { ClientInfo } from './lib/kosyclient';
 import './styles/style.scss';
+import { isValidGoogleDriveUrl } from './lib/validation';
 
 module Kosy.Integration.GoogleDrive {
 
@@ -53,8 +54,11 @@ module Kosy.Integration.GoogleDrive {
                     this.log("A client has joined: ", message.payload);
                     break;
                 case "client-has-left":
-                    //No need to process this for this app
                     this.log("A client has left: ", message.payload);
+                    //If no google drive url has been picked, and the initializer is gone -> end the integration
+                    if (message.payload.clientUuid === this.initializer.clientUuid && !this.state.googleDriveUrl) {
+                        this.sendMessage({ type: "end-integration", payload: {} });
+                    }
                     break;
                 case "request-integration-state":
                     //Ping - pong
@@ -71,9 +75,10 @@ module Kosy.Integration.GoogleDrive {
         private processIntegrationMessage (message: IntegrationMessage) {  
             switch (message.type) {
                 case "receive-google-drive-url":
-                    console.log("Received google drive url: ", message.payload);
-                    this.state.googleDriveUrl = message.payload;
-                    this.renderComponent();
+                    if (isValidGoogleDriveUrl(message.payload)) {
+                        this.state.googleDriveUrl = message.payload;
+                        this.renderComponent();
+                    }
                     break;
             }
         }
@@ -81,8 +86,6 @@ module Kosy.Integration.GoogleDrive {
         private processComponentMessage (message: ComponentMessage) {
             switch (message.type) {
                 case "google-drive-url-changed":
-                    //Set the google drive url
-                    this.state.googleDriveUrl = message.payload;
                     //Notify all other clients that the google drive url has changed
                     this.sendMessage({ type: "relay-message", payload: { type: "receive-google-drive-url", payload: message.payload } });
                     break;

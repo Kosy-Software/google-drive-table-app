@@ -4,20 +4,34 @@
         <title>Kosy - Google docs plugin</title>
         <meta charset="utf-8">
         <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap" rel="stylesheet">
     </head>
-    <body style="margin: 0; overflow-y: hidden;">
+    <body>
         <template id="waiting">
-            <div></div>
+            <div class="waiting">
+                <label></label>
+                <img src="waiting.svg" />
+            </div>
         </template>
         <template id="picking">
-            <div>
-                <input type="text" id="google-input">
-                <button id="google-button">Click me to view google drive</button>
+            <div class="picking">
+                <h3>Embed google drive</h3>
+                <div>
+                    <input type="text" id="google-input" placeholder="Paste Google Docs/Drive URL">
+                    <button id="open-file" disabled>Open file</button>
+                </div>
+                <p>OR</p>
+                <button id="open-picker">
+                    Pick a file
+                    <img src="google-icon.svg" />
+                </button>
             </div>
         </template>
         <template id="viewing">
-            <iframe src="" frameborder="0" width="100%">
-            </iframe>    
+            <div class="viewing">
+                <iframe src="" frameborder="0" width="100%"></iframe>
+            </div>
         </template>
         <div id="root"></div>
     </body>
