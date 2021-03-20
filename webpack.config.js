@@ -6,7 +6,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 const fs = require("fs");
-const devServerSettings = require("./settings.json").devServer;
+const devServerSettings = require("./settings.json").devServer || {};
 
 const getDevServerSslSettings = () => {
     if (!devServerSettings.ssl) return false;
@@ -105,7 +105,7 @@ module.exports = (env, options) => {
         devServer: {
             https: CONFIG.devServerSsl,
             hot: true,
-            publicPath: "/",            
+            publicPath: "/",
             contentBase: resolve(CONFIG.assetsDir),
             host: CONFIG.devServerHost,
             port: CONFIG.devServerPort
