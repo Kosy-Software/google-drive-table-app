@@ -37,7 +37,8 @@ jobs:
           npm run build
            
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
           BRANCH: gh-pages # The branch the action should deploy to.
           FOLDER: dist # The folder the action should deploy.
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
