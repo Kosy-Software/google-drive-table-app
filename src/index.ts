@@ -8,20 +8,20 @@ import { render } from './views/renderState';
 import { openPopup } from './lib/openPopup';
 import { isValidGoogleDriveUrl } from './lib/validation';
 import { ClientInfo } from '@kosy/kosy-app-api/types';
-import { KosyAppProxy } from '@kosy/kosy-app-api';
+import { KosyApi } from '@kosy/kosy-app-api';
 
 module Kosy.Integration.GoogleDrive {
     export class App {
-        private kosyApi = new KosyAppProxy<AppState, AppMessage>({
+        private state: AppState = { googleDriveUrl: null };
+        private initializer: ClientInfo;
+        private currentClient: ClientInfo;
+
+        private kosyApi = new KosyApi<AppState, AppMessage>({
             onClientHasJoined: (client) => this.onClientHasJoined(client),
             onClientHasLeft: (client) => this.onClientHasLeft(client),
             onReceiveMessage: (message) => this.processMessage(message),
             onRequestState: () => this.getState()
         })
-        private state: AppState = { googleDriveUrl: null };
-        private initializer: ClientInfo;
-        private currentClient: ClientInfo;
-
         public async start() {
             let initialInfo = await this.kosyApi.startApp();
             this.initializer = initialInfo.clients[initialInfo.initializerClientUuid];
