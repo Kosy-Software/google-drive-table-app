@@ -26,8 +26,13 @@ module Kosy.Integration.GoogleDrive {
             let initialInfo = await this.kosyApi.startApp();
             this.initializer = initialInfo.clients[initialInfo.initializerClientUuid];
             this.currentClient = initialInfo.clients[initialInfo.currentClientUuid];
-            this.state = initialInfo.currentIntegrationState ?? this.state;
+            this.state = initialInfo.currentAppState ?? this.state;
             this.renderComponent();
+
+            //Might not be the best way of handling the google picker -> but it works well enough...
+            window.addEventListener("message", (event: MessageEvent<ComponentMessage>) => {
+                this.processComponentMessage(event.data)
+            });
         }
 
         public getState() {
