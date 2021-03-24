@@ -1,5 +1,5 @@
-import { ComponentState } from "../lib/integrationState";
-import { ComponentMessage } from "../lib/integrationmessages";
+import { ComponentState } from "../lib/appState";
+import { ComponentMessage } from "../lib/appMessages";
 import { isValidGoogleDriveUrl } from "../lib/validation";
 
 //Renders the picking state

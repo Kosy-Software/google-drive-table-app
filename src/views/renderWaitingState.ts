@@ -1,5 +1,5 @@
-import { ComponentState } from '../lib/integrationState';
-import { ComponentMessage } from '../lib/integrationmessages';
+import { ComponentState } from '../lib/appState';
+import { ComponentMessage } from '../lib/appMessages';
 
 //Renders the waiting state
 export function renderWaitingState (state: ComponentState, dispatch: ((msg: ComponentMessage) => any)): HTMLElement {

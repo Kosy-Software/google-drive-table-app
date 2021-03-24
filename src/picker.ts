@@ -1,5 +1,5 @@
-import { FilePickerMessage } from "./lib/pickermessages";
 import "./styles/style.scss";
+import { FilePickerMessage } from "./lib/appMessages";
 import settings from "./../settings.json";
 
 module Kosy.Integration.GoogleDrive {
