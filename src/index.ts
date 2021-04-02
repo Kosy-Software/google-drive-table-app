@@ -87,6 +87,7 @@ module Kosy.Integration.GoogleDrive {
                     //If the file picker was closed with a google drive url -> 
                     if (message.payload.googleDriveUrl) {
                         this.log("Google drive url picked: ", message.payload.googleDriveUrl);
+                        this.state.googleDriveUrl = message.payload.googleDriveUrl;
                         this.processComponentMessage({ type: "google-drive-url-changed", payload: message.payload.googleDriveUrl });
                     } else {                        
                         this.log("No google drive url picked, ending integration");

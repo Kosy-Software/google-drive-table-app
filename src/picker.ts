@@ -12,6 +12,7 @@ module Kosy.Integration.GoogleDrive {
     }
 
     const JAN1970 = new Date("1970-01-01T00:00:00Z").getTime();
+    const editMode = /https:\/\/(drive|docs)\.google\.com.*\/edit.*/
 
     //The google driver picker wraps google's drive picker with extra information and message passing 
     //(this is how google recommends the picker is implemented)
@@ -112,9 +113,11 @@ module Kosy.Integration.GoogleDrive {
                     .setCallback((data: any) => {
                         //If a document was picked
                         if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
-                            let doc = data[google.picker.Response.DOCUMENTS][0];
-                            //Get an embeddable url
-                            let url = doc[google.picker.Document.URL].includes("/edit") ? doc[google.picker.Document.EMBEDDABLE_URL].replace("/preview", "/edit") : doc[google.picker.Document.EMBEDDABLE_URL];
+                            let doc = data[google.picker.Response.DOCUMENTS][0];                            
+                            let documentUrl = doc[google.picker.Document.URL] as string;
+                            let embeddableUrl = doc[google.picker.Document.EMBEDDABLE_URL] as string;
+                            //Determine if we can show edit mode (use regular document url) or not (use embeddable url) -> google be quirky \o/
+                            let url = editMode.test(documentUrl) ? documentUrl : embeddableUrl;
                             //Notify the main app
                             this.sendMessage({ type: "file-picker-closed", payload: { googleDriveUrl: url } });
                             window.close();
