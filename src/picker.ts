@@ -114,7 +114,7 @@ module Kosy.Integration.GoogleDrive {
                         if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
                             let doc = data[google.picker.Response.DOCUMENTS][0];
                             //Get an embeddable url
-                            let url = doc[google.picker.Document.URL].contains("edit") ? 
+                            let url = doc[google.picker.Document.URL].contains("/edit") ? 
                                 doc[google.picker.Document.EMBEDDABLE_URL].replace("/preview", "/edit") : doc[google.picker.Document.EMBEDDABLE_URL];
                             //Notify the main app
                             this.sendMessage({ type: "file-picker-closed", payload: { googleDriveUrl: url } });
