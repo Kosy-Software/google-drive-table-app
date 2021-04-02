@@ -3,7 +3,7 @@ import { FilePickerMessage } from "./lib/appMessages";
 import settings from "./../settings.json";
 
 module Kosy.Integration.GoogleDrive {
-    const SCOPE = "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly ";
+    const SCOPE = "https://www.googleapis.com/auth/drive.file";
     interface PickerParams {
         google: {
             "api_key": string,
