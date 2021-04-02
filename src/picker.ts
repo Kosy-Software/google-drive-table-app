@@ -114,7 +114,6 @@ module Kosy.Integration.GoogleDrive {
                     .setCallback((data: any) => {
                         //If a document was picked
                         if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
-                            alert("picked");
                             let doc = data[google.picker.Response.DOCUMENTS][0];  
                             let documentUrl = doc[google.picker.Document.URL] as string;
                             //When a file was uploaded, it doesn't have an embeddable url as property -> replace /view with /preview... *sigh* *hack hack hack*
@@ -127,7 +126,6 @@ module Kosy.Integration.GoogleDrive {
                         }
                         //If cancel was clicked, close the pop-up
                         if (data[google.picker.Response.ACTION] == google.picker.Action.CANCEL) {
-                            alert("canceled?");
                             this.sendMessage({ type: "file-picker-closed", payload: {} });
                             window.close();
                         }
