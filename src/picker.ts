@@ -106,6 +106,7 @@ module Kosy.Integration.GoogleDrive {
             return new google.picker.PickerBuilder()
                     //Filters the view for documents
                     .addView(google.picker.ViewId.DOCS)
+                    .addView(new google.picker.DocsUploadView().setIncludeFolders(true))
                     .setOAuthToken(oauthToken)
                     .setDeveloperKey(googleApiKey)
                     //You need to set up the origin, otherwise the iframe doesn't have permission to be shown
@@ -113,9 +114,11 @@ module Kosy.Integration.GoogleDrive {
                     .setCallback((data: any) => {
                         //If a document was picked
                         if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
-                            let doc = data[google.picker.Response.DOCUMENTS][0];                            
+                            alert("picked");
+                            let doc = data[google.picker.Response.DOCUMENTS][0];  
                             let documentUrl = doc[google.picker.Document.URL] as string;
-                            let embeddableUrl = doc[google.picker.Document.EMBEDDABLE_URL] as string;
+                            //When a file was uploaded, it doesn't have an embeddable url as property -> replace /view with /preview... *sigh* *hack hack hack*
+                            let embeddableUrl = doc[google.picker.Document.EMBEDDABLE_URL] as string ?? documentUrl.replace("/view", "/preview");
                             //Determine if we can show edit mode (use regular document url) or not (use embeddable url) -> google be quirky \o/
                             let url = editMode.test(documentUrl) ? documentUrl : embeddableUrl;
                             //Notify the main app
@@ -124,6 +127,7 @@ module Kosy.Integration.GoogleDrive {
                         }
                         //If cancel was clicked, close the pop-up
                         if (data[google.picker.Response.ACTION] == google.picker.Action.CANCEL) {
+                            alert("canceled?");
                             this.sendMessage({ type: "file-picker-closed", payload: {} });
                             window.close();
                         }
