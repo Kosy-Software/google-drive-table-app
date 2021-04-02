@@ -3,7 +3,7 @@ import { FilePickerMessage } from "./lib/appMessages";
 import settings from "./../settings.json";
 
 module Kosy.Integration.GoogleDrive {
-    const SCOPE = "https://www.googleapis.com/auth/drive.file";
+    const SCOPE = "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly ";
     interface PickerParams {
         google: {
             "api_key": string,
@@ -114,7 +114,7 @@ module Kosy.Integration.GoogleDrive {
                         if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
                             let doc = data[google.picker.Response.DOCUMENTS][0];
                             //Get an embeddable url
-                            let url = doc[google.picker.Document.EMBEDDABLE_URL];
+                            let url = doc[google.picker.Document.URL];
                             //Notify the main app
                             this.sendMessage({ type: "file-picker-closed", payload: { googleDriveUrl: url } });
                             window.close();

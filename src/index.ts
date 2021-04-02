@@ -23,33 +23,45 @@ module Kosy.Integration.GoogleDrive {
             onRequestState: () => this.getState()
         })
         public async start() {
+            //There are no assets to pre-load, we can notify kosy that the app has started right away :)
             let initialInfo = await this.kosyApi.startApp();
+
+            //For this app, it's important to know who initialized the app
             this.initializer = initialInfo.clients[initialInfo.initializerClientUuid];
             this.currentClient = initialInfo.clients[initialInfo.currentClientUuid];
+            
+            //If this is the first client, the currentAppState will be empty. 
+            //Don't set the state but use the default one
             this.state = initialInfo.currentAppState ?? this.state;
+
+            //The state was loaded -> render it
             this.renderComponent();
 
-            //Might not be the best way of handling the google picker -> but it works well enough...
+            //Might not be the best way of handling the google picker's popup message -> but it works well enough...
             window.addEventListener("message", (event: MessageEvent<ComponentMessage>) => {
                 this.processComponentMessage(event.data)
             });
         }
 
+        //Simplest to implement -> just return the current state
         public getState() {
             return this.state;
         }
 
+        //For this app, it's not important to know who's at the table
         public onClientHasJoined(client: ClientInfo) {
-            //No need to process this message for this app
         }
 
+
+        //If no google drive url has been picked, and the initializer is gone -> end the integration
+        //Otherwise, ignore.
         public onClientHasLeft(client: ClientInfo) {
-            //If no google drive url has been picked, and the initializer is gone -> end the integration
             if (client.clientUuid === this.initializer.clientUuid && !this.state.googleDriveUrl) {
                 this.kosyApi.stopApp();
             }
         }
 
+        //Process the message that was sent via the kosy network
         public processMessage(message: AppMessage) {
             switch (message.type) {
                 case "receive-google-drive-url":
@@ -61,7 +73,7 @@ module Kosy.Integration.GoogleDrive {
             }
         }
 
-
+        //Process messages that were delegated via the different app components
         private processComponentMessage (message: ComponentMessage) {
             switch (message.type) {
                 case "google-drive-url-changed":
@@ -82,8 +94,7 @@ module Kosy.Integration.GoogleDrive {
                     }
                     break;
                 case "file-picker-opened":
-                    this.log("The file picker was opened");
-
+                    //Opens the google drive file picker
                     openPopup ("picker.html", { 
                         onclose: () => this.processComponentMessage({ type: "file-picker-closed", payload: {} }),
                         width: 1024,
@@ -104,6 +115,7 @@ module Kosy.Integration.GoogleDrive {
             }, (message) => this.processComponentMessage(message));
         }
 
+        //The reason we pulled this out, is because it's easy to change the logging to e.g. console.debug, console.trace, console.table, etc. etc.
         private log (...message: any) {
             console.log(`${this.currentClient?.clientName ?? "New user"} logged: `, ...message);
         }
