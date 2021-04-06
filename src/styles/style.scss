@@ -1,3 +1,5 @@
+@use "_colors.scss" as colors;
+
 $border-radius: 12px;
 
 .picker {
@@ -8,8 +10,15 @@ $border-radius: 12px;
 
 body {
     overflow: hidden;
-    font-family: 'Source Sans Pro', sans-serif;
     margin: 0;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.02em;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Poppins', sans-serif;
 }
 
 .waiting {
@@ -56,13 +65,13 @@ body {
     button {
         color: white;
         padding: 13px 13px 13px 16px;
-        background-color: #696DFF;
+        background-color: colors.$color-info;
         border-radius: $border-radius;
         border: 0;
         cursor: pointer;
 
         &:disabled {
-            background-color: #F9F9F9;
+            background-color: colors.$color-white-broken;
             color: #C9CED4;
             cursor: not-allowed;
         }
