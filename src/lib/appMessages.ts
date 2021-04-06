@@ -1,29 +1,20 @@
 /// Messages that are relayed to all of the clients
 export type AppMessage =
-    | ReceiveGoogleDriveUrl
+    | ReceiveGoogleDriveFileId
 
-export interface ReceiveGoogleDriveUrl {
-    type: "receive-google-drive-url";
+export interface ReceiveGoogleDriveFileId {
+    type: "receive-google-drive-file-id";
     payload: string;
 }
 
 /// Internal component messages
 export type ComponentMessage =
-    | GoogleDriveUrlHasChanged
-    | FilePickerMessage
-
-export interface GoogleDriveUrlHasChanged {
-    type: "google-drive-url-changed";
-    payload: string;
-}
-
-export type FilePickerMessage = 
-    | FilePickerClosed
+    | GoogleDriveFileIdHasChanged
     | FilePickerOpened
 
-export interface FilePickerClosed {
-    type: "file-picker-closed";
-    payload: { googleDriveUrl?: string; };
+export interface GoogleDriveFileIdHasChanged {
+    type: "google-drive-file-id-changed";
+    payload: string;
 }
 
 export interface FilePickerOpened {

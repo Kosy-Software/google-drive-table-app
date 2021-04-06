@@ -1,6 +1,6 @@
 import { ComponentState } from "../lib/appState";
 import { ComponentMessage } from "../lib/appMessages";
-import { isValidGoogleDriveUrl } from "../lib/validation";
+import { isValidGoogleDriveUrl, parseGoogleDriveFileId } from '../lib/googleDrive';
 
 //Renders the picking state
 export function renderPickingState (state: ComponentState, dispatch: ((msg: ComponentMessage) => any)): HTMLElement {
@@ -21,9 +21,8 @@ export function renderPickingState (state: ComponentState, dispatch: ((msg: Comp
     }    
     //This sets up the google input element -> on input changed -> relay a message
     openFileBtn.onclick = (event: Event) => {
-        //First draft -> google drive url needs to be validated, for now, this just accepts everything
-        let url = fileUrlInput.value;
-        dispatch({  type: "google-drive-url-changed", payload: url });
+        let fileId = parseGoogleDriveFileId(fileUrlInput.value);
+        dispatch({  type: "google-drive-file-id-changed", payload: fileId });
     }
 
     //This sets up the onclick for the "Click me to view google drive" button

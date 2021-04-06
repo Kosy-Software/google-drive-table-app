@@ -2,8 +2,10 @@
 <html>
     <head>
         <title>Kosy - Google docs plugin</title>
-        <meta charset="utf-8">
-        <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="https://apis.google.com/js/api.js" defer="defer"></script>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap" rel="stylesheet">
     </head>
@@ -31,6 +33,11 @@
         <template id="viewing">
             <div class="viewing">
                 <iframe src="" frameborder="0" width="100%"></iframe>
+            </div>
+        </template>
+        <template id="forbidden">
+            <div class="forbidden">
+                <label>The google drive file that was picked is not accessible to you :-(</label>
             </div>
         </template>
         <div id="root"></div>

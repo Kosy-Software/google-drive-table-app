@@ -6,20 +6,20 @@ import { AppMessage, ComponentMessage } from './lib/appMessages';
 import { AppState } from './lib/appState';
 import { render } from './views/renderState';
 import { openPopup } from './lib/openPopup';
-import { isValidGoogleDriveUrl } from './lib/validation';
 import { ClientInfo } from '@kosy/kosy-app-api/types';
 import { KosyApi } from '@kosy/kosy-app-api';
+import { determineGoogleDriveUrl } from './lib/googleDrive';
 
 module Kosy.Integration.GoogleDrive {
     export class App {
-        private state: AppState = { googleDriveUrl: null };
+        private state: AppState = { googleDriveFileId: null };
         private initializer: ClientInfo;
         private currentClient: ClientInfo;
 
         private kosyApi = new KosyApi<AppState, AppMessage>({
             onClientHasJoined: (client) => this.onClientHasJoined(client),
             onClientHasLeft: (client) => this.onClientHasLeft(client),
-            onReceiveMessage: (message) => this.processMessage(message),
+            onReceiveMessage: (message) => { this.processMessage(message) },
             onRequestState: () => this.getState()
         })
         public async start() {
@@ -56,48 +56,36 @@ module Kosy.Integration.GoogleDrive {
         //If no google drive url has been picked, and the initializer is gone -> end the integration
         //Otherwise, ignore.
         public onClientHasLeft(client: ClientInfo) {
-            if (client.clientUuid === this.initializer.clientUuid && !this.state.googleDriveUrl) {
+            if (client.clientUuid === this.initializer.clientUuid && !this.state.googleDriveFileId) {
                 this.kosyApi.stopApp();
             }
         }
 
         //Process the message that was sent via the kosy network
-        public processMessage(message: AppMessage) {
+        public async processMessage(message: AppMessage) {
             switch (message.type) {
-                case "receive-google-drive-url":
-                    if (isValidGoogleDriveUrl(message.payload)) {
-                        this.state.googleDriveUrl = message.payload;
-                        this.renderComponent();
-                    }
+                case "receive-google-drive-file-id":
+                    this.log("Received a message from Kosy: ", message);
+                    this.state.googleDriveFileId = message.payload;
+                    await this.renderComponent();
                     break;
             }
-        }
+        }        
 
         //Process messages that were delegated via the different app components
-        private processComponentMessage (message: ComponentMessage) {
+        private async processComponentMessage (message: ComponentMessage) {
             switch (message.type) {
-                case "google-drive-url-changed":
-                    //Notify all other clients that the google drive url has changed
-                    this.kosyApi.relayMessage({ type: "receive-google-drive-url", payload: message.payload });
-                    break;
-                case "file-picker-closed":
-                    //We're already in a state where we have a google drive url -> ignore the message
-                    if (this.state.googleDriveUrl) break;
-
-                    //If the file picker was closed with a google drive url -> 
-                    if (message.payload.googleDriveUrl) {
-                        this.log("Google drive url picked: ", message.payload.googleDriveUrl);
-                        this.state.googleDriveUrl = message.payload.googleDriveUrl;
-                        this.processComponentMessage({ type: "google-drive-url-changed", payload: message.payload.googleDriveUrl });
-                    } else {                        
-                        this.log("No google drive url picked, ending integration");
-                        this.kosyApi.stopApp();
+                case "google-drive-file-id-changed":
+                    if (message.payload) {
+                        this.log("The google drive file id has changed: ", message.payload);
+                        //Notify all clients that the google drive url has changed
+                        this.kosyApi.relayMessage({ type: "receive-google-drive-file-id", payload: message.payload });
+                        break;
                     }
-                    break;
                 case "file-picker-opened":
+                    this.log("Open the file picker");
                     //Opens the google drive file picker
-                    openPopup ("picker.html", { 
-                        onclose: () => this.processComponentMessage({ type: "file-picker-closed", payload: {} }),
+                    openPopup ("picker.html", {
                         width: 1024,
                         height: 1024
                     });
@@ -108,11 +96,12 @@ module Kosy.Integration.GoogleDrive {
         }
 
         //Poor man's react, so we don't need to fetch the entire react library for this tiny app...
-        private renderComponent () {
+        private async renderComponent () {
             render({
-                googleDriveUrl: this.state.googleDriveUrl, 
+                googleDriveFileId: this.state.googleDriveFileId, 
                 currentClient: this.currentClient,
-                initializer: this.initializer
+                initializer: this.initializer,
+                googleDriveUrl: await determineGoogleDriveUrl(this.state.googleDriveFileId)
             }, (message) => this.processComponentMessage(message));
         }
 

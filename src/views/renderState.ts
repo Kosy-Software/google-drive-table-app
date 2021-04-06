@@ -3,19 +3,26 @@ import { ComponentMessage } from '../lib/appMessages';
 import { renderViewingState } from './renderViewingState';
 import { renderPickingState } from './renderPickingState';
 import { renderWaitingState } from './renderWaitingState';
+import { renderForbiddenState } from './renderForbiddenState';
 
 type Dispatch = (msg: ComponentMessage) => void;
 type RenderView = (state: ComponentState, dispatch: Dispatch) => HTMLElement;
 
-export function render (state: ComponentState, dispatch: Dispatch): void {
-    let renderView: RenderView;
-    if (state?.googleDriveUrl) {
-        renderView = renderViewingState;
-    } else if (state.currentClient.clientUuid == state.initializer.clientUuid) {
-        renderView = renderPickingState;
-    } else {
-        renderView = renderWaitingState;
+function determineRenderer (state: ComponentState): RenderView {
+    if (state.googleDriveFileId) {
+        if (!state.googleDriveUrl) {
+            return renderForbiddenState;
+        }
+        return renderViewingState;
     }
+    if (state.currentClient.clientUuid == state.initializer.clientUuid) {
+        return renderPickingState;
+    }
+    return renderWaitingState;
+}
+
+export function render (state: ComponentState, dispatch: Dispatch): void {
+    let renderView = determineRenderer (state);
 
     //No need to import (and maintain) an entire component library and its customs for this small app...
     //All of the states are cleanly defined
