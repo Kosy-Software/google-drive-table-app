@@ -29,6 +29,7 @@ export async function determineGoogleDriveUrl (fileId: string) {
             return webViewLink.replace("/view", "/preview");
         }
     } catch (e) {
+        document.getElementById("debug").innerHTML = "Error: " + JSON.stringify(e);
         return null;
     }
 }
