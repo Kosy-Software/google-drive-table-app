@@ -3,17 +3,13 @@ import { ComponentMessage } from '../lib/appMessages';
 import { renderViewingState } from './renderViewingState';
 import { renderPickingState } from './renderPickingState';
 import { renderWaitingState } from './renderWaitingState';
-import { renderForbiddenState } from './renderForbiddenState';
 
 type Dispatch = (msg: ComponentMessage) => void;
 type RenderView = (state: ComponentState, dispatch: Dispatch) => HTMLElement;
 
 function determineRenderer (state: ComponentState): RenderView {
-    if (state.googleDriveFileId) {
-        if (!state.googleDriveUrl) {
-            return renderForbiddenState;
-        }
-        return renderViewingState;
+    if (state.googleDriveUrl) {
+        return renderViewingState
     }
     if (state.currentClient.clientUuid == state.initializer.clientUuid) {
         return renderPickingState;

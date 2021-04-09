@@ -1,14 +1,22 @@
 import settings from "./../../settings.json";
+import { GoogleDriveValidationResponse } from './appMessages';
 
-const googleRegex = new RegExp("^(https://\\w+.google.com)")
+const googleRegex = new RegExp("^(https://\\w+.google.com)");
+const googleDriveRegex = new RegExp("^(https://(drive|docs).google.com)", "i");
 //Just matches the first file identifier it comes across (google file identifiers are always exactly 25 characters long)
-const googleDriveRegex = new RegExp("/d/([-\\w]{25,})")
+const googleDriveFileIdRegex = new RegExp("/d/([-\\w]{25,})");
 
-export function isValidGoogleDriveUrl (url: string) {
+export function hasValidGoogleFormat (url: string) {
     return url && googleRegex.test(url)
 }
 
-export async function determineGoogleDriveUrl (fileId: string) {
+export function createFileShareLink (urlString: string) {
+    let url = new URL(urlString);
+    url.searchParams.append("userstoinvite", "@");
+    return url.toString();
+}
+
+export async function validateGoogleDriveFileId (fileId: string): Promise<GoogleDriveValidationResponse> {
     if (!fileId) return null; //Unknown, we don't know what to do with this
 
     let authResponse = await authorizeWithGoogle();
@@ -17,26 +25,32 @@ export async function determineGoogleDriveUrl (fileId: string) {
     await loadGoogleApi("client");
     gapi.client.setApiKey(settings.google.api_key);
     gapi.client.setToken({ access_token: authResponse.access_token });
+    let defaultLink = `https://drive.google.com/file/d/${fileId}/preview`;
     try {
-        let response = await gapi.client.request({ path: `https://www.googleapis.com/drive/v3/files/${fileId}?fields=webViewLink` });
-        let webViewLink = JSON.parse(response?.body || "{}").webViewLink as string;
-        if (webViewLink) {
+        let response = await gapi.client.request({ path: `https://www.googleapis.com/drive/v3/files/${fileId}?fields=webViewLink,shared` });
+        let fileMetadata = JSON.parse(response?.body || "{}") as { webViewLink: string, shared: boolean };
+        let link = null;
+        if (fileMetadata.webViewLink) {
             //An exception to the "editable" rule, google doesn't allow jamboard to be editable in an iframe
-            if (webViewLink.startsWith("https://jamboard.google.com")) {
-                return `https://drive.google.com/file/d/${fileId}/preview`
+            if (!googleDriveRegex.test(fileMetadata.webViewLink)) {
+                link = defaultLink;
+            } else {
+                link = fileMetadata.webViewLink.replace("/view", "/preview");
             }
-            //We can't use /view, so this needs to be /preview for the embedded URL
-            return webViewLink.replace("/view", "/preview");
+        }
+        if (!fileMetadata.shared) {
+            return { url: link, error: "NotShared" }
+        } else {
+            return { url: link };
         }
     } catch (e) {
-        document.getElementById("debug").innerHTML = "Error: " + JSON.stringify(e);
-        return null;
+        return { url: defaultLink, error: "NotFound" };
     }
 }
 
 
 export function parseGoogleDriveFileId (url: string): string {
-    let parsed = url.match(googleDriveRegex);
+    let parsed = url.match(googleDriveFileIdRegex);
     if (parsed && parsed.length > 1) {
         return parsed[1];
     } else {
