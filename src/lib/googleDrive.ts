@@ -11,7 +11,7 @@ export function hasValidGoogleFormat (url: string) {
 }
 
 export function createFileShareLink (urlString: string) {
-    let url = new URL(urlString);
+    let url = new URL(urlString.replace("/preview", "/edit"));
     url.searchParams.append("userstoinvite", "@");
     return url.toString();
 }
