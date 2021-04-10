@@ -1,6 +1,10 @@
 # google-drive-table-app
 Table app for Google Drive integration
 
+## Debugging tool
+
+https://kosy-software.github.io/kosy-debug-app/?url=https://kosy-software.github.io/google-drive-table-app
+
 ## Alias localhost
 Since google doesn't like people running their API's on localhost (don't ask me why...), create an alias to localhost:
 
