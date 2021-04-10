@@ -16,40 +16,17 @@ export function createFileShareLink (urlString: string) {
     return url.toString();
 }
 
-export async function validateGoogleDriveFileId (fileId: string): Promise<GoogleDriveValidationResponse> {
-    if (!fileId) return null; //Unknown, we don't know what to do with this
-
-    let authResponse = await authorizeWithGoogle();
-    if (!authResponse) return null;
-
-    await loadGoogleApi("client");
-    gapi.client.setApiKey(settings.google.api_key);
-    gapi.client.setToken({ access_token: authResponse.access_token });
-    let defaultLink = `https://drive.google.com/file/d/${fileId}/preview`;
-    try {
-        let response = await gapi.client.request({ path: `https://www.googleapis.com/drive/v3/files/${fileId}?fields=webViewLink,shared` });
-        let fileMetadata = JSON.parse(response?.body || "{}") as { webViewLink: string, shared: boolean };
-        let link = null;
-        if (fileMetadata.webViewLink) {
-            //An exception to the "editable" rule, google doesn't allow jamboard to be editable in an iframe
-            if (!googleDriveRegex.test(fileMetadata.webViewLink)) {
-                link = defaultLink;
-            } else {
-                link = fileMetadata.webViewLink.replace("/view", "/preview");
-            }
-        }
-        if (!fileMetadata.shared) {
-            return { url: link, error: "NotShared" }
-        } else {
-            return { url: link };
-        }
-    } catch (e) {
-        return { url: defaultLink, error: "NotFound" };
+export function convertGoogleLinkToEmbeddableLink (url: string): string {
+    //An exception to the "editable" rule, google doesn't allow jamboard to be editable in an iframe
+    if (!googleDriveRegex.test(url)) {
+        let googleDriveFileId = parseGoogleDriveFileId(url);
+        return `https://drive.google.com/file/d/${googleDriveFileId}/preview`;
+    } else {
+        return url.replace("/view", "/preview");
     }
 }
 
-
-export function parseGoogleDriveFileId (url: string): string {
+function parseGoogleDriveFileId (url: string): string {
     let parsed = url.match(googleDriveFileIdRegex);
     if (parsed && parsed.length > 1) {
         return parsed[1];

@@ -1,6 +1,6 @@
 import "./styles/style.scss";
-import { ComponentMessage } from "./lib/appMessages";
-import { authorizeWithGoogle, validateGoogleDriveFileId } from "./lib/googleDrive";
+import { ComponentMessage, GoogleDriveValidationResponse } from './lib/appMessages';
+import { authorizeWithGoogle, convertGoogleLinkToEmbeddableLink } from './lib/googleDrive';
 import settings from "./../settings.json";
 
 module Kosy.Integration.GoogleDrive {
@@ -46,10 +46,10 @@ module Kosy.Integration.GoogleDrive {
                         if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
                             //Get the file id
                             let doc = data[google.picker.Response.DOCUMENTS][0];
-                            let googleDriveFileId = doc[google.picker.Document.ID] as string;
-                            //Can't do this at a lower level, as you might not have been logged in with google yet and a pop-up can't be opened unless a user has explicitly clicked a button... 
-                            //I know this is a major inconvenience, but that's the way it is...
-                            let validationResponse = await validateGoogleDriveFileId(googleDriveFileId);
+
+                            //Parse the URL
+                            let validationResponse: GoogleDriveValidationResponse = { url: doc[google.picker.Document.URL] as string };
+                            if (!doc.isShared) validationResponse.error = "NotShared";
                             //Notify the main app
                             this.sendMessage({ type: "google-drive-validation-changed", payload: validationResponse });
                             window.close();

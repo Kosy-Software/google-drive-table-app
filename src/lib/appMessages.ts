@@ -17,7 +17,7 @@ export interface FilePickerOpened {
     payload: {};
 }
 
-export type GoogleDriveValidationResponse = { url: string, error?: "NotFound" | "NotShared" };
+export type GoogleDriveValidationResponse = { url: string, error?: "NotShared" };
 
 export interface GoogleDriveValidationHasChanged {
     type: "google-drive-validation-changed";
