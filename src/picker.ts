@@ -1,6 +1,6 @@
 import "./styles/style.scss";
 import { ComponentMessage, GoogleDriveValidationResponse } from './lib/appMessages';
-import { authorizeWithGoogle, convertGoogleLinkToEmbeddableLink } from './lib/googleDrive';
+import { authorizeWithGoogle } from './lib/googleDrive';
 import settings from "./../settings.json";
 
 module Kosy.Integration.GoogleDrive {

@@ -1,5 +1,4 @@
 import settings from "./../../settings.json";
-import { GoogleDriveValidationResponse } from './appMessages';
 
 const googleRegex = new RegExp("^(https://\\w+.google.com)");
 const googleDriveRegex = new RegExp("^(https://(drive|docs).google.com)", "i");
