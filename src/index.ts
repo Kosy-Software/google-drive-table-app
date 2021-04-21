@@ -20,7 +20,7 @@ module Kosy.Integration.GoogleDrive {
             onClientHasJoined: (client) => this.onClientHasJoined(client),
             onClientHasLeft: (clientUuid) => this.onClientHasLeft(clientUuid),
             onReceiveMessage: (message) => { this.processMessage(message) },
-            onRequestState: () => this.getState()
+            onRequestState: () => this.getState(),
             onProvideState: (newState: AppState) => this.setState(newState)
         })
         public async start() {
