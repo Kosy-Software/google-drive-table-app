@@ -9,7 +9,7 @@ module Kosy.Integration.GoogleDrive {
     export class Picker {
 
         public async start() {
-            let authResponse = await authorizeWithGoogle();
+            let authResponse = await authorizeWithGoogle().catch(() => null);
             //If the user wasn't authorized, close the pop-up
             if (!authResponse) {
                 window.close();

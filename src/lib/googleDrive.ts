@@ -48,26 +48,33 @@ export async function authorizeWithGoogle() {
 
     //If the auth response has expired - go fetch a new token
     if (expirationDate < new Date()) {
-        authResponse = await authorizeAppForGoogleDrive(settings.google.client_id);
+        authResponse = await authorizeAppForGoogleDrive();
         localStorage.setItem("google_access_token", JSON.stringify(authResponse));
     }
     return authResponse;
 }
 
-async function authorizeAppForGoogleDrive(googleClientId: string): Promise<gapi.auth2.AuthResponse> {
+function getGoogleAuth(scope?: string) {
+    gapi.auth2.init({
+        client_id: settings.google.client_id,                        
+        scope: scope
+    });
+    return gapi.auth2.getAuthInstance();
+}
+
+export async function getUserIsSignedIntoGoogle(): Promise<boolean> {
+    await loadGoogleApi("auth2");
+    let googleAuth = getGoogleAuth();
+    return googleAuth.isSignedIn.get();
+}
+
+async function authorizeAppForGoogleDrive(): Promise<gapi.auth2.AuthResponse> {
     //Load the authentication scripts from the google api (gapi)
     await loadGoogleApi("auth2");
-
     //Initialize and show a "log in with your google account" dialog (if necessary)
     let authorizeResponse: gapi.auth2.AuthResponse = await new Promise((resolve, reject) => {
         try {
-            gapi.auth2.init({
-                client_id: googleClientId,                        
-                scope: SCOPE,
-                fetch_basic_profile: false
-            });
-
-            let googleAuth = gapi.auth2.getAuthInstance();
+            let googleAuth = getGoogleAuth(SCOPE);
 
             // Handle initial sign-in state. (Determine if user is already signed in.)
             var user = googleAuth.currentUser.get();
