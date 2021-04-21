@@ -14,7 +14,7 @@ export function renderViewingState (state: ComponentState, dispatch: (msg: Compo
         iframe.style.width = "100vw";
         iframe.src = convertGoogleLinkToEmbeddableLink(state.googleDriveUrl);
     }
-    getUserIsSignedIntoGoogle().then((userIsSignedIn) => {
+    getUserIsSignedIntoGoogle().catch(() => false).then((userIsSignedIn) => {
         if (userIsSignedIn) {
             let loginButton = viewingElement.querySelector(".login") as HTMLButtonElement;
             loginButton.onclick = () => {
