@@ -51,6 +51,7 @@ module Kosy.Integration.GoogleDrive {
 
         public setState(newState: AppState) {
             this.state = newState;
+            this.renderComponent();
         }
 
         //For this app, it's not important to know who's at the table
