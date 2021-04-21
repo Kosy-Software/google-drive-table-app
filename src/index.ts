@@ -18,9 +18,10 @@ module Kosy.Integration.GoogleDrive {
 
         private kosyApi = new KosyApi<AppState, AppMessage>({
             onClientHasJoined: (client) => this.onClientHasJoined(client),
-            onClientHasLeft: (client) => this.onClientHasLeft(client),
+            onClientHasLeft: (clientUuid) => this.onClientHasLeft(clientUuid),
             onReceiveMessage: (message) => { this.processMessage(message) },
             onRequestState: () => this.getState()
+            onProvideState: (newState: AppState) => this.setState(newState)
         })
         public async start() {
             //There are no assets to pre-load, we can notify kosy that the app has started right away :)
@@ -48,6 +49,10 @@ module Kosy.Integration.GoogleDrive {
             return this.state;
         }
 
+        public setState(newState: AppState) {
+            this.state = newState;
+        }
+
         //For this app, it's not important to know who's at the table
         public onClientHasJoined(client: ClientInfo) {
         }
@@ -55,8 +60,8 @@ module Kosy.Integration.GoogleDrive {
 
         //If no google drive url has been picked, and the initializer is gone -> end the integration
         //Otherwise, ignore.
-        public onClientHasLeft(client: ClientInfo) {
-            if (client.clientUuid === this.initializer.clientUuid && !this.state.googleDriveUrl) {
+        public onClientHasLeft(clientUuid: string) {
+            if (clientUuid === this.initializer.clientUuid && !this.state.googleDriveUrl) {
                 this.kosyApi.stopApp();
             }
         }
