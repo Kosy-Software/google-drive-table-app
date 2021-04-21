@@ -25,13 +25,19 @@ export function renderPickingState (state: ComponentState, dispatch: (msg: Compo
     fileUrlInput.value = state.validationResponse.url;
     fileUrlInput.oninput = (event: Event) => {
         const val = fileUrlInput.value;
+        fileUrlInput.classList.remove("invalid");
+        fileUrlInput.classList.remove("valid");
+        openFileBtn.classList.remove("valid");
         errorLabel.innerHTML = "";
-        if (hasValidGoogleFormat(val)) {
-            openFileBtn.removeAttribute("disabled");            
-            fileUrlInput.style.color = "black";
-        } else {
-            openFileBtn.setAttribute("disabled", "disabled");
-            fileUrlInput.style.color = "red";
+        if (val) {
+            if (hasValidGoogleFormat(val)) {
+                openFileBtn.removeAttribute("disabled");
+                openFileBtn.classList.add("valid");
+                fileUrlInput.classList.add("valid");
+            } else {
+                openFileBtn.setAttribute("disabled", "disabled");
+                fileUrlInput.classList.add("invalid");
+            }  
         }
     }
     //This sets up the google input element -> on input changed -> relay a message

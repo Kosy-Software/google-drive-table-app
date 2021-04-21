@@ -35,10 +35,9 @@ function parseGoogleDriveFileId (url: string): string {
 }
 
 
-const SCOPE = "https://www.googleapis.com/auth/drive.file";
 const JAN1970 = new Date("1970-01-01T00:00:00Z").getTime();
 
-export async function authorizeWithGoogle() {
+export async function authorizeWithGoogle(scope?: string) {
     //Fetch the google token from localstorage
     let authResponse = JSON.parse(localStorage.getItem("google_access_token") || "{}") as gapi.auth2.AuthResponse;
 
@@ -48,52 +47,52 @@ export async function authorizeWithGoogle() {
 
     //If the auth response has expired - go fetch a new token
     if (expirationDate < new Date()) {
-        authResponse = await authorizeAppForGoogleDrive();
+        authResponse = await authorizeAppForGoogleDrive(scope);
         localStorage.setItem("google_access_token", JSON.stringify(authResponse));
     }
     return authResponse;
 }
 
-function getGoogleAuth(scope?: string) {
-    gapi.auth2.init({
-        client_id: settings.google.client_id,                        
-        scope: scope
-    });
-    return gapi.auth2.getAuthInstance();
+//Google's auth instance messes up the type system......... X_x
+function withGoogleAuthScope<X>(fx: (googleAuth: gapi.auth2.GoogleAuth) => X, scope?: string): Promise<X> {
+    return gapi.auth2
+        .init({
+            client_id: settings.google.client_id,                        
+            scope: scope
+        })
+        .then(() => fx(gapi.auth2.getAuthInstance()));
 }
 
 export async function getUserIsSignedIntoGoogle(): Promise<boolean> {
     await loadGoogleApi("auth2");
-    let googleAuth = getGoogleAuth();
-    return googleAuth.isSignedIn.get();
+    return withGoogleAuthScope((googleAuth) => googleAuth.isSignedIn.get());
 }
 
-async function authorizeAppForGoogleDrive(): Promise<gapi.auth2.AuthResponse> {
+async function authorizeAppForGoogleDrive(scope?: string): Promise<gapi.auth2.AuthResponse> {
     //Load the authentication scripts from the google api (gapi)
     await loadGoogleApi("auth2");
-    //Initialize and show a "log in with your google account" dialog (if necessary)
-    let authorizeResponse: gapi.auth2.AuthResponse = await new Promise((resolve, reject) => {
-        try {
-            let googleAuth = getGoogleAuth(SCOPE);
-
-            // Handle initial sign-in state. (Determine if user is already signed in.)
-            var user = googleAuth.currentUser.get();
-            // If the user has granted access to the correct scopes
-            if (user.hasGrantedScopes(SCOPE)) {
-                // Return the auth response
-                resolve(user.getAuthResponse(true));
-            } else {
-                // Sign in
-                googleAuth
-                    .signIn()
-                    .then((googleUser) => resolve(googleUser.getAuthResponse(true)))
-                    .catch((e) => reject(e));
+    let authorizeResponse = await withGoogleAuthScope((googleAuth) => {
+        //Initialize and show a "log in with your google account" dialog (if necessary)
+        return new Promise<gapi.auth2.AuthResponse>((resolve, reject) => {
+            try {
+                // Handle initial sign-in state. (Determine if user is already signed in.)
+                let user = googleAuth.currentUser.get()
+                // If the user has granted access to the correct scopes
+                if (user.hasGrantedScopes(scope)) {
+                    // Return the auth response
+                    resolve(user.getAuthResponse(true));
+                } else {
+                    // Sign in
+                    googleAuth
+                        .signIn()
+                        .then((googleUser) => resolve(googleUser.getAuthResponse(true)))
+                        .catch((e) => reject(e));
+                }
+            } catch(error) {
+                reject ();
             }
-        } catch(error) {
-            reject ();
-        }
-    });
-
+        });
+    })
     return authorizeResponse;
 }
 

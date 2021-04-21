@@ -11,6 +11,7 @@ export interface ReceiveGoogleDriveUrl {
 export type ComponentMessage =
     | GoogleDriveValidationHasChanged
     | FilePickerOpened
+    | AuthenticatedWithGoogle
 
 export interface FilePickerOpened {
     type: "file-picker-opened";
@@ -22,4 +23,8 @@ export type GoogleDriveValidationResponse = { url: string, error?: "NotShared" }
 export interface GoogleDriveValidationHasChanged {
     type: "google-drive-validation-changed";
     payload: GoogleDriveValidationResponse;
+}
+
+export interface AuthenticatedWithGoogle {
+    type: "authenticated-with-google"
 }

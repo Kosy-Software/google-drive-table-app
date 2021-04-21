@@ -8,6 +8,7 @@ import { render } from './views/renderState';
 import { openPopup } from './lib/openPopup';
 import { ClientInfo } from '@kosy/kosy-app-api/types';
 import { KosyApi } from '@kosy/kosy-app-api';
+import { getUserIsSignedIntoGoogle } from './lib/googleDrive';
 
 module Kosy.Integration.GoogleDrive {
     export class App {
@@ -94,6 +95,8 @@ module Kosy.Integration.GoogleDrive {
                     this.validationResponse = result;
                     result.error ? this.renderComponent() : this.kosyApi.relayMessage({ type: "receive-google-drive-url", payload: result.url })
                     break;
+                case "authenticated-with-google":
+                    this.renderComponent();
                 default:
                     break;
             }
@@ -102,7 +105,8 @@ module Kosy.Integration.GoogleDrive {
         //Poor man's react, so we don't need to fetch the entire react library for this tiny app...
         private async renderComponent () {
             render({
-                googleDriveUrl: this.state.googleDriveUrl, 
+                googleDriveUrl: this.state.googleDriveUrl,
+                userIsSignedIntoGoogle: await getUserIsSignedIntoGoogle(),
                 currentClient: this.currentClient,
                 initializer: this.initializer,
                 validationResponse: this.validationResponse ?? { url: "" }

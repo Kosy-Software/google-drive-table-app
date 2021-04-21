@@ -12,4 +12,6 @@ export interface ComponentState extends AppState {
     initializer: ClientInfo;
     /// Validation response
     validationResponse: GoogleDriveValidationResponse;
+    /// A boolean denoting if the user has logged in with google or not
+    userIsSignedIntoGoogle: boolean
 }

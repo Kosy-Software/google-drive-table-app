@@ -1,6 +1,7 @@
 @use "_colors.scss" as colors;
 
-$border-radius: 12px;
+$input-border-radius: 12px;
+$button-border-radius: 28px;
 
 .picker {
     height: 100% !important;
@@ -15,25 +16,67 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: -0.02em;
+    color: colors.$color-grey;
 }
 
 h1, h2, h3, h4, h5 {
     font-family: 'Poppins', sans-serif;
+    color: colors.$color-black-bluish;
+}
+
+h3 {
+    font-weight: 700;
+    font-size: 24px;
+    margin: 0;
+}
+
+.gap {
+    height: 5px;
+    content: ' ';
 }
 
 .waiting {
-    width: 100%;
+    display: grid;
+    justify-content: center;
+    align-content: center;
     text-align: center;
-    margin-top: 20px;
+    height: 100vh;
 
-    label {
-        display: block;
+    .gap {
+        height: 24px;
+        content: ' '
+    }
+
+    .img-container {
+        width: 400px;
+    }
+}
+
+button {
+    padding: 17.5px;
+    font-size: 14px;
+    border-radius: $button-border-radius;
+    border: 1px solid colors.$color-grey-border;
+    cursor: pointer;
+    background-color: white;
+    color: colors.$color-grey;
+
+    &:disabled {
+        background-color: colors.$color-white-broken;
+        color: #C9CED4;
+        cursor: not-allowed;
+    }
+
+    &.valid {
+        color: white;
+        background-color: colors.$color-primary;
     }
 
     img {
-        margin-top: 15%;
-        max-width: 25%;
-        max-height: 25%;
+        position: fixed;
+        margin-top: -2px;
+        margin-left: 6px;
+        max-height: 20px;
     }
 }
 
@@ -44,43 +87,35 @@ h1, h2, h3, h4, h5 {
     row-gap: 1em;
     height: 100vh;
     font-size: 16px;
+    text-align: center;
+    
+    div {
+        width: 400px;
+    }
 
-    h3 {
-        font-weight: 700;
-        text-align: center;
-        font-size: 24px;
-        margin: 0;
+    label {
+        font-size: 16px;
+        font-style: normal;
+        font-weight: normal;
     }
 
     input {
-        background-color: #F1F2F5;
+        background-color: white;
         padding: 13px 13px 13px 13px;
-        border: none;
-        border-radius: $border-radius;
-        width: 200px;
-        margin-right: 10px;
-        text-align: center;
-    }
+        border: 1px solid colors.$color-grey-border;
+        border-radius: $input-border-radius;
 
-    button {
-        color: white;
-        padding: 13px 13px 13px 16px;
-        background-color: colors.$color-info;
-        border-radius: $border-radius;
-        border: 0;
-        cursor: pointer;
-
-        &:disabled {
-            background-color: colors.$color-white-broken;
-            color: #C9CED4;
-            cursor: not-allowed;
+        &::placeholder {
+            color: colors.$color-grey-default;
         }
 
-        img {
-            position: fixed;
-            margin-top: 1px;
-            margin-left: 6px;
-            max-height: 13px;
+        &.valid {
+            border-color: colors.$color-primary;
+        }
+
+        &.invalid {
+            border-color: colors.$color-danger;
+            color: colors.$color-danger;
         }
     }
 
@@ -88,7 +123,6 @@ h1, h2, h3, h4, h5 {
         margin: 0;
         height: 20px;
         font-size: 16px;
-        text-align: center;
     }
 }
 
