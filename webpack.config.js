@@ -7,6 +7,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 const fs = require("fs");
 const devServerSettings = require("./settings.json").devServer || {};
+const sveltePreprocess = require("svelte-preprocess");
 
 const getDevServerSslSettings = () => {
     if (!devServerSettings.ssl) return false;
@@ -113,40 +114,53 @@ module.exports = (env, options) => {
         },
         module: {
             rules: [
+                //Allows use of typescript
                 {
                     test: /\.ts?$/,
                     use: "ts-loader",
                     exclude: /node_modules/
                 },
+                //Allows use of modern javascript
                 {
-                    test: /\.js$/,
-                    exclude: /node_modules/,
-                    loader: "babel-loader",
-                    options: {
-                        presets: [
-                            [
-                                "@babel/preset-env", {
-                                    useBuiltIns: "usage",
-                                    targets: {
-                                        esmodules: true
-                                    }
-                                }
-                            ]
-                        ]
-                    }
+                    test: /\.js?$/,
+                    exclude: /node_modules/, //don"t test node_modules folder
+                    use: {
+                        loader: "babel-loader",
+                    },
                 },
+                //Allows use of svelte
+                {
+                    test: /\.svelte$/,
+                    use: {
+                        loader: "svelte-loader",
+                        options: {
+                            emitCss: true,
+                            preprocess: sveltePreprocess({})
+                        }
+                    },
+                },
+                //Allows use of (S)CSS
                 {
                     test: /\.(scss|css)$/,
                     use: [
-                        isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
-                        "css-loader",
+                        isProduction ? MiniCssExtractPlugin.loader : 'style-loader', 
+                        "css-loader", 
                         "sass-loader"
-                    ]
-                }
+                    ],
+                },
+                //Allows use of images
+                {
+                    test: /\.(jpg|jpeg|png|svg)$/,
+                    use: "file-loader",
+                },
             ]
         },
         resolve: {
-            extensions: [".ts", ".js"]
+            extensions: [".mjs", ".ts", ".tsx", ".js", ".svelte"],
+            alias: {
+                svelte: path.resolve("node_modules", "svelte")
+            },
+            mainFields: ["svelte", "browser", "module", "main"]
         },
         plugins: getPlugins(isProduction)
     }

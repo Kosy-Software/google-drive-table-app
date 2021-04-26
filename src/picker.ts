@@ -1,5 +1,4 @@
-import "./styles/style.scss";
-import { ComponentMessage, GoogleDriveValidationResponse } from './lib/appMessages';
+import type { GoogleDriveUrlPicked } from './lib/componentMessages';
 import { authorizeWithGoogle } from './lib/googleDrive';
 import settings from "./../settings.json";
 
@@ -48,11 +47,9 @@ module Kosy.Integration.GoogleDrive {
                             //Get the file id
                             let doc = data[google.picker.Response.DOCUMENTS][0];
 
-                            //Parse the URL
-                            let validationResponse: GoogleDriveValidationResponse = { url: doc[google.picker.Document.URL] as string };
-                            if (!doc.isShared) validationResponse.error = "NotShared";
                             //Notify the main app
-                            this.sendMessage({ type: "google-drive-validation-changed", payload: validationResponse });
+                            let url = doc[google.picker.Document.URL] as string;
+                            this.sendMessage({ type: "google-drive-url-picked", payload: { url: url, error: doc.isShared ? undefined : "NotShared" } });
                             window.close();
                         }
                         //If cancel was clicked, close the pop-up
@@ -64,7 +61,7 @@ module Kosy.Integration.GoogleDrive {
         }
 
         //Sends a message back to the main app
-        private sendMessage (filePickerMessage: ComponentMessage) {
+        private sendMessage (filePickerMessage: GoogleDriveUrlPicked) {
             (window.opener as Window).postMessage(filePickerMessage, window.location.origin);
         }    
     }

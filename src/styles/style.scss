@@ -35,20 +35,22 @@ h3 {
     content: ' ';
 }
 
-.waiting {
-    display: grid;
-    justify-content: center;
-    align-content: center;
-    text-align: center;
-    height: 100vh;
+input {
+    background-color: white;
+    border: 1px solid colors.$color-grey-border;
+    border-radius: $input-border-radius;
 
-    .gap {
-        height: 24px;
-        content: ' '
+    &::placeholder {
+        color: colors.$color-grey-default;
     }
 
-    .img-container {
-        width: 400px;
+    &.valid {
+        border-color: colors.$color-primary;
+    }
+
+    &.invalid {
+        border-color: colors.$color-danger;
+        color: colors.$color-danger;
     }
 }
 
@@ -77,61 +79,5 @@ button {
         margin-top: -2px;
         margin-left: 6px;
         max-height: 20px;
-    }
-}
-
-.picking {
-    display: grid;
-    justify-content: center;
-    align-content: center;
-    row-gap: 1em;
-    height: 100vh;
-    font-size: 16px;
-    text-align: center;
-    
-    div {
-        width: 400px;
-    }
-
-    label {
-        font-size: 16px;
-        font-style: normal;
-        font-weight: normal;
-    }
-
-    input {
-        background-color: white;
-        padding: 13px 13px 13px 13px;
-        border: 1px solid colors.$color-grey-border;
-        border-radius: $input-border-radius;
-
-        &::placeholder {
-            color: colors.$color-grey-default;
-        }
-
-        &.valid {
-            border-color: colors.$color-primary;
-        }
-
-        &.invalid {
-            border-color: colors.$color-danger;
-            color: colors.$color-danger;
-        }
-    }
-
-    p {
-        margin: 0;
-        height: 20px;
-        font-size: 16px;
-    }
-}
-
-.viewing {
-    .overlay {
-        height: 100vh;
-        width: 100vw;
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
 }

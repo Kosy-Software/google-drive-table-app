@@ -1,17 +1,14 @@
 {
+    "extends": "@tsconfig/svelte/tsconfig.json",
     "compilerOptions": {
-        "moduleResolution": "Node",
-        "target": "ES6",
-        "noImplicitAny": true,
-        "removeComments": true,
-        "preserveConstEnums": true,
-        "sourceMap": false,
-        "types": [ "google.picker", "gapi", "gapi.auth2" ],
-        "allowSyntheticDefaultImports": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "types": [
+            "google.picker",
+            "gapi",
+            "gapi.auth2",
+            "svelte"
+        ],
     },
-    "files": [
-      "src/index.ts",
-      "src/picker.ts"
-    ]
+    "include": [ "./src/" ],
+    "exclude": [ "/node_modules" ]
 }
