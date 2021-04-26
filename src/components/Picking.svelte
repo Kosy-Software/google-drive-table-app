@@ -57,8 +57,9 @@
             width: 400px;
         }
 
-        label {
+        .error-label {
             font-size: 14px;
+            color: red;
         }
 
         p {
@@ -97,7 +98,7 @@
         <img alt="google drive icon" src="assets/google-drive-icon.svg" />
     </button>
     {#if showSharingError}
-        <label for="open-picker" style="color: red">
+        <label class="error-label" for="open-picker">
             The file is not shared. Please click <a href={createFileShareLink(inputValue)} target="_blank">here</a> to enable file sharing.
         </label>
     {/if}
