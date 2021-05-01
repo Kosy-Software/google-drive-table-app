@@ -2,14 +2,13 @@ import type { GoogleDriveUrlPicked } from './lib/componentMessages';
 import { authorizeWithGoogle } from './lib/googleDrive';
 import settings from "./../settings.json";
 
-const SCOPE = "https://www.googleapis.com/auth/drive.file";
 module Kosy.Integration.GoogleDrive {
     //The google driver picker wraps google's drive picker with extra information and message passing 
     //(this is how google recommends the picker is implemented)
     export class Picker {
 
         public async start() {
-            let authResponse = await authorizeWithGoogle(SCOPE).catch(() => null);
+            let authResponse = await authorizeWithGoogle().catch(() => null);
             //If the user wasn't authorized, close the pop-up
             if (!authResponse) {
                 window.close();

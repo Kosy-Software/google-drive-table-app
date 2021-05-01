@@ -21,15 +21,16 @@
         onRequestState: () => getState(),
         onProvideState: (newState: AppState) => setState(newState)
     })
-    
+
     //There are no assets to pre-load, we can notify kosy that the app has started right away :)
     kosyApi.startApp().then(async (initialInfo: InitialInfo<AppState>) => {
-        //Determine if the current user is signed into google
-        currentUserIsSignedIntoGoogle = await getUserIsSignedIntoGoogle()
         
         //For this app, it's important to know who initialized the app
         initializer = initialInfo.clients[initialInfo.initializerClientUuid];
         currentClient = initialInfo.clients[initialInfo.currentClientUuid];
+
+        //Determine if the current user is signed into google
+        currentUserIsSignedIntoGoogle = await getUserIsSignedIntoGoogle()
         
         //If this is the first client, the currentAppState will be empty. 
         //Don't set the state but use the default one
@@ -85,7 +86,7 @@
 
 {#if initializer && currentClient}
     {#if state.googleDriveUrl && currentUserIsSignedIntoGoogle}
-        <Viewing url={state.googleDriveUrl} />
+        <Viewing {initializer} {currentClient} url={state.googleDriveUrl} />
     {:else if currentClient.clientUuid == initializer.clientUuid && currentUserIsSignedIntoGoogle}
         <Picking on:picked={(event) => driveUrlPicked(event.detail)} />
     {:else}
