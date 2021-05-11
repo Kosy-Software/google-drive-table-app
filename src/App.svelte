@@ -90,6 +90,6 @@
     {:else if currentClient.clientUuid == initializer.clientUuid && currentUserIsSignedIntoGoogle}
         <Picking on:picked={(event) => driveUrlPicked(event.detail)} />
     {:else}
-        <Waiting {initializer} {currentClient} {currentUserIsSignedIntoGoogle} on:signed-in={() => refreshSignedInWithGoogle()} />
+        <Waiting {initializer} {currentClient} {currentUserIsSignedIntoGoogle} googleDriveUrl={state.googleDriveUrl} on:signed-in={() => refreshSignedInWithGoogle()} />
     {/if}
 {/if}
