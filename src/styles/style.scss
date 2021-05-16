@@ -53,31 +53,3 @@ input {
         color: colors.$color-danger;
     }
 }
-
-button {
-    padding: 17.5px;
-    font-size: 14px;
-    border-radius: $button-border-radius;
-    border: 1px solid colors.$color-grey-border;
-    cursor: pointer;
-    background-color: white;
-    color: colors.$color-grey;
-
-    &:disabled {
-        background-color: colors.$color-white-broken;
-        color: #C9CED4;
-        cursor: not-allowed;
-    }
-
-    &.valid {
-        color: white;
-        background-color: colors.$color-primary;
-    }
-
-    img {
-        position: fixed;
-        margin-top: -2px;
-        margin-left: 6px;
-        max-height: 20px;
-    }
-}

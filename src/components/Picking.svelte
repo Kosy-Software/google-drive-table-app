@@ -3,6 +3,7 @@
     import { hasValidGoogleFormat, createFileShareLink, convertGoogleLinkToEmbeddableLink } from "../lib/googleDrive";
     import { openPopup } from "../lib/openPopup";
     import { createEventDispatcher, onDestroy } from "svelte";
+    import Button from "./Button.svelte";
 
     const dispatch = createEventDispatcher<PickedEvent>();
 
@@ -95,15 +96,14 @@
         bind:value={inputValue} 
         on:input={() => { showSharingError = false; showInvalidUrlError = false; } }
     />
-    <button 
-        id="open-file"
-        class:valid={inputIsValid} 
-        on:click={() => openFile()}>Open file</button>
+    <Button importance="primary" on:click={() => openFile()} disabled={ !inputIsValid }>
+        <span class="text">Open file</span>
+    </Button>
     <p>OR</p>
-    <button name="open-picker" on:click={() => openGoogleDriveFilePicker()}>
-        Pick a file
-        <img alt="google drive icon" src="assets/google-drive-icon.svg" />
-    </button>
+    <Button importance="secondary">
+        <span class="text">Pick a file</span>
+        <img class="icon-right" alt="google drive icon" src="assets/google-drive-icon.svg" />
+    </Button>
     {#if showSharingError}
         <label class="error-label" for="open-picker">
             The file you picked is not a shared file. Please click <a href={createFileShareLink(inputValue)} target="_blank">here</a> to enable file sharing.

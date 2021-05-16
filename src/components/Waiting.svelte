@@ -3,6 +3,7 @@
     import type { SignedInEvent } from "../lib/componentMessages";
     import { createEventDispatcher } from "svelte";
     import { authorizeWithGoogle } from "../lib/googleDrive";
+    import Button from "./Button.svelte";
 
     export let googleDriveUrl: string
     export let currentUserIsSignedIntoGoogle: boolean;
@@ -54,8 +55,9 @@
     </div>
     <div class="gap"></div>
     {#if !currentUserIsSignedIntoGoogle}
-        <button class="login" on:click={() => signIn()}>
-            Log in with Google <img alt="google-icon" src="assets/google-icon.svg" />
-        </button>
+        <Button importance="secondary" on:click={() => signIn()}>
+            <span class="text">Log in with Google</span>
+            <img class="icon-right" alt="google-icon" src="assets/google-icon.svg" />
+        </Button>
     {/if}
 </div>
