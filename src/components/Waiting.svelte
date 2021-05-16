@@ -3,7 +3,7 @@
     import type { SignedInEvent } from "../lib/componentMessages";
     import { createEventDispatcher } from "svelte";
     import { authorizeWithGoogle } from "../lib/googleDrive";
-    import Button from "./Button.svelte";
+    import Button from "@kosy/kosy-svelte-components/Button.svelte";
 
     export let googleDriveUrl: string
     export let currentUserIsSignedIntoGoogle: boolean;

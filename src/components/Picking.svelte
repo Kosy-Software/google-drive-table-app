@@ -3,7 +3,7 @@
     import { hasValidGoogleFormat, createFileShareLink, convertGoogleLinkToEmbeddableLink } from "../lib/googleDrive";
     import { openPopup } from "../lib/openPopup";
     import { createEventDispatcher, onDestroy } from "svelte";
-    import Button from "./Button.svelte";
+    import Button from "@kosy/kosy-svelte-components/Button.svelte";
 
     const dispatch = createEventDispatcher<PickedEvent>();
 
@@ -100,7 +100,7 @@
         <span class="text">Open file</span>
     </Button>
     <p>OR</p>
-    <Button importance="secondary">
+    <Button importance="secondary" on:click={() => openGoogleDriveFilePicker()}>
         <span class="text">Pick a file</span>
         <img class="icon-right" alt="google drive icon" src="assets/google-drive-icon.svg" />
     </Button>
