@@ -14,10 +14,12 @@
     let currentClient: ClientInfo;
     let currentUserIsSignedIntoGoogle: boolean = false;
 
-    let kosyApi = new KosyApi<AppState, AppMessage>({
+    let kosyApi = new KosyApi<AppState, AppMessage, AppMessage>({
         onClientHasJoined: (client) => onClientHasJoined(client),
         onClientHasLeft: (clientUuid) => onClientHasLeft(clientUuid),
-        onReceiveMessage: (message) => { processMessage(message) },
+        //No need to process this message in any special way -> return message
+        onReceiveMessageAsHost: message => message,
+        onReceiveMessageAsClient: (message) => { processMessage(message) },
         onRequestState: () => getState(),
         onProvideState: (newState: AppState) => setState(newState)
     })
