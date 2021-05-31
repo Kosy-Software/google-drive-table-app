@@ -15,14 +15,12 @@
     let currentUserIsSignedIntoGoogle: boolean = false;
 
     let kosyApi = new KosyApi<AppState, AppMessage, AppMessage>({
-        onClientHasJoined: (client) => onClientHasJoined(client),
         onClientHasLeft: (clientUuid) => onClientHasLeft(clientUuid),
-        //No need to process this message in any special way -> return message
         onReceiveMessageAsHost: message => message,
         onReceiveMessageAsClient: (message) => { processMessage(message) },
         onRequestState: () => getState(),
         onProvideState: (newState: AppState) => setState(newState)
-    })
+    });
 
     //There are no assets to pre-load, we can notify kosy that the app has started right away :)
     kosyApi.startApp().then(async (initialInfo: InitialInfo<AppState>) => {
@@ -33,7 +31,6 @@
         initializer = initialInfo.clients[initialInfo.initializerClientUuid];
         currentClient = initialInfo.clients[initialInfo.currentClientUuid];
 
-        
         //If this is the first client, the currentAppState will be empty. 
         //Don't set the state but use the default one
         state = initialInfo.currentAppState ?? state;
@@ -47,9 +44,6 @@
     function setState(newState: AppState) {
         state = newState;
     }
-
-    //For this app, it's not important to know who's at the table
-    function onClientHasJoined(client: ClientInfo) {}
 
     //If no google drive url has been picked, and the initializer is gone -> end the integration
     //Otherwise, ignore.
