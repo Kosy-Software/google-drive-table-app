@@ -34,6 +34,11 @@
         .img-container {
             width: 400px;
         }
+
+        .waiting-icon {
+            height: 120px;
+            width: 120px;
+        }
     }
 </style>
 
@@ -51,7 +56,7 @@
     {/if}
     <div class="gap"></div>
     <div class="img-container">
-        <img alt="waiting" src="assets/waiting.svg" />
+        <img class="waiting-icon" alt="waiting" src="assets/waiting.svg" />
     </div>
     <div class="gap"></div>
     {#if !currentUserIsSignedIntoGoogle}
