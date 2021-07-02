@@ -50,13 +50,8 @@
 
 <style lang="scss">
     .picking {
-        display: grid;
-        justify-content: center;
-        align-content: center;
         row-gap: 1em;
-        height: 100vh;
         font-size: 16px;
-        text-align: center;
         
         input {
             padding: 13px 13px 13px 13px;
@@ -79,7 +74,7 @@
     }
 </style>
 
-<div class="picking">
+<div class="center-content picking">
     <div>
         <h3>Embed google drive</h3>
         <p>

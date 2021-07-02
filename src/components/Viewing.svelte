@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { ClientInfo } from "@kosy/kosy-app-api/types";
     import { convertGoogleLinkToEmbeddableLink } from "../lib/googleDrive";
+    import AccessDenied from "./AccessDenied.svelte";
     export let url: string;
     export let initializer: ClientInfo;
     export let currentClient: ClientInfo;
@@ -17,14 +18,14 @@
 </style>
 
 {#await embeddableUrlPromise}
-    <div>Loading...</div>
+    <div></div>
 {:then embeddableUrl}
     <iframe title="google drive " src={embeddableUrl}></iframe>
 {:catch}
     {#if initializer.clientUuid !== currentClient.clientUuid}
-        <div>You do not have access to this file. Please ask {initializer.clientName} to share the file with you.</div>
+        <AccessDenied msg="Please ask {initializer.clientName} to share the file with you."></AccessDenied>
     {:else}
         <!-- In theory, this should not occur, but let's include it anyway :) -->
-        <div>The file you were trying to share is not available to you...</div>
+        <AccessDenied msg="This should not occur, but it did, and we're very sorry :("></AccessDenied>
     {/if}
 {/await}

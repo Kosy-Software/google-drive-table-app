@@ -9,6 +9,14 @@ $button-border-radius: 28px;
     top: 0 !important;
 }
 
+.center-content {
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+    height: 100vh;
+}
+
 body {
     overflow: hidden;
     margin: 0;
