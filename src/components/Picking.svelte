@@ -97,7 +97,9 @@
     <p>OR</p>
     <Button importance="secondary" on:click={() => openGoogleDriveFilePicker()}>
         <span class="text">Pick a file</span>
-        <img class="icon-right" alt="google drive icon" src="assets/google-drive-icon.svg" />
+        <div>
+            <img class="icon-right" alt="google drive icon" src="assets/google-drive-icon.svg" />
+        </div>
     </Button>
     {#if showSharingError}
         <label class="error-label" for="open-picker">

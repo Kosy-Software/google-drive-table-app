@@ -15,5 +15,7 @@
         <p>{msg}</p>
     </div>
     <div class="gap"></div>
-    <img class="access-denied" src="assets/access-denied.svg" alt="access-denied">
+    <div>
+        <img class="access-denied" src="assets/access-denied.svg" alt="access-denied">
+    </div>
 </div>

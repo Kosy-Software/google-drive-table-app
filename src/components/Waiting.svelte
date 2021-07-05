@@ -45,7 +45,9 @@
         <p>{initializer.clientName} is picking a file to share</p>
     {/if}
     <div class="gap"></div>
-    <img class="waiting-icon" alt="waiting" src="assets/waiting.svg" />
+    <div>
+        <img class="waiting-icon" alt="waiting" src="assets/waiting.svg" />
+    </div>
     <div class="gap"></div>
     {#if !currentUserIsSignedIntoGoogle}
         <Button importance="secondary" on:click={() => signIn()}>
