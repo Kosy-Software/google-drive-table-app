@@ -22,8 +22,13 @@
         onProvideState: (newState: AppState) => setState(newState)
     });
 
+    //Times out after 3 seconds to show a loading screen if necessary
+    let showLoadingPromise: Promise<void> = new Promise((resolve, reject) => {
+        setTimeout(() => { resolve(); }, 3000);
+    });
+
     //There are no assets to pre-load, we can notify kosy that the app has started right away :)
-    kosyApi.startApp().then(async (initialInfo: InitialInfo<AppState>) => {
+    let initializationPromise: Promise<void> = kosyApi.startApp().then(async (initialInfo: InitialInfo<AppState>) => {
         //Determine if the current user is signed into google
         currentUserIsSignedIntoGoogle = await getUserIsSignedIntoGoogle()
         
@@ -64,7 +69,6 @@
     }        
 
     let driveUrlPicked = (driveUrl: string) => {
-        //TODO: Add validation here.
         log("Relaying message: drive url picked", driveUrl);
         kosyApi.relayMessage({ type: "receive-google-drive-url", payload: driveUrl });
     }
@@ -80,7 +84,16 @@
     }
 </script>
 
-{#if initializer && currentClient}
+{#await initializationPromise}
+    {#await showLoadingPromise}
+        <div></div>
+    {:then}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <div class="center-content">
+            <span><i class="fa fa-circle-notch fa-spin"></i> Loading google drive app</span>
+        </div>
+    {/await}
+{:then}
     {#if state.googleDriveUrl && currentUserIsSignedIntoGoogle}
         <Viewing {initializer} {currentClient} url={state.googleDriveUrl} />
     {:else if currentClient.clientUuid == initializer.clientUuid && currentUserIsSignedIntoGoogle}
@@ -88,4 +101,10 @@
     {:else}
         <Waiting {initializer} {currentClient} {currentUserIsSignedIntoGoogle} googleDriveUrl={state.googleDriveUrl} on:signed-in={() => refreshSignedInWithGoogle()} />
     {/if}
-{/if}
+{:catch error}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <div class="center-content">
+        <h2 style="color: red"><i class="fas fa-exclamation-circle"></i> Oops</h2>
+        <span style="color: red">An error has occured while initializing the google drive app</span>
+    </div>
+{/await}
