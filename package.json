@@ -13,6 +13,7 @@
     "@tsconfig/svelte": "^1.0.10",
     "@types/gapi": "0.0.39",
     "@types/gapi.auth2": "0.0.53",
+    "@types/gapi.client.drive": "^3.0.13",
     "@types/google.picker": "0.0.34"
   },
   "devDependencies": {

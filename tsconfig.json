@@ -6,7 +6,9 @@
             "google.picker",
             "gapi",
             "gapi.auth2",
-            "svelte"
+            "svelte",
+            "gapi.client",
+            "gapi.client.drive"
         ],
     },
     "include": [ "./src/" ],

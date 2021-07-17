@@ -66,7 +66,8 @@ export async function authorizeWithGoogle() {
 }
 
 //Google's auth instance messes up the type system......... X_x
-function withGoogleAuthScope<X>(fx: (googleAuth: gapi.auth2.GoogleAuth) => X): Promise<X> {
+async function withGoogleAuthScope<X>(fx: (googleAuth: gapi.auth2.GoogleAuth) => X): Promise<X> {
+    await loadGoogleApi("auth2");
     return gapi.auth2
         .init({
             client_id: settings.google.client_id,                        
@@ -76,13 +77,11 @@ function withGoogleAuthScope<X>(fx: (googleAuth: gapi.auth2.GoogleAuth) => X): P
 }
 
 export async function getUserIsSignedIntoGoogle(): Promise<boolean> {
-    await loadGoogleApi("auth2");
     return withGoogleAuthScope((googleAuth) => googleAuth.isSignedIn.get() && googleAuth.currentUser.get().hasGrantedScopes(FILEAPISCOPE));
 }
 
 async function authorizeAppForGoogleDrive(): Promise<gapi.auth2.AuthResponse> {
     //Load the authentication scripts from the google api (gapi)
-    await loadGoogleApi("auth2");
     let authorizeResponse = await withGoogleAuthScope((googleAuth) => {
         //Initialize and show a "log in with your google account" dialog (if necessary)
         return new Promise<gapi.auth2.AuthResponse>((resolve, reject) => {
@@ -117,4 +116,37 @@ async function loadGoogleApi(apiKey: string): Promise<any> {
             ontimeout: () => reject ()
         })
     )
+}
+
+async function loadGoogleApiLibrary(apiKey: string, version: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        gapi.client.load(apiKey, version, () => resolve())
+    });
+}
+
+export async function createGoogleTestFile(): Promise<any> {
+    return new Promise(async (resolve, reject) => {        
+        let link: string = await withGoogleAuthScope(async (googleAuth) => {
+            await loadGoogleApi("client");
+            await loadGoogleApiLibrary("drive", "v3");
+            let user = googleAuth.currentUser.get()
+            let fileResponse = await gapi.client.drive.files.create({
+                resource: {
+                    name: "test.docx",
+                    mimeType: "application/vnd.google-apps.document"                    
+                },                
+                fields: "id,webViewLink",                
+            });
+            await gapi.client.drive.permissions.create({
+                fileId: fileResponse.result.id,
+                resource: {
+                    role: "writer",
+                    type: "anyone"
+                },
+                oauth_token: user.getAuthResponse().access_token
+            });
+            return fileResponse.result.webViewLink;
+        });
+        return resolve(link);
+    }).catch(e => { console.error(e); return Promise.reject(e); });
 }

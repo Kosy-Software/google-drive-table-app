@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { GoogleDriveUrlPicked, PickedEvent } from "../lib/componentMessages";
-    import { hasValidGoogleFormat, createFileShareLink, convertGoogleLinkToEmbeddableLink } from "../lib/googleDrive";
+    import { hasValidGoogleFormat, createFileShareLink, convertGoogleLinkToEmbeddableLink, createGoogleTestFile } from "../lib/googleDrive";
     import { openPopup } from "../lib/openPopup";
     import { createEventDispatcher, onDestroy } from "svelte";
     import Button from "@kosy/kosy-svelte-components/Button.svelte";
@@ -38,13 +38,19 @@
     window.addEventListener("message", handleGoogleDrivePickerEvent);
     onDestroy(() => window.removeEventListener("message", handleGoogleDrivePickerEvent));
 
-    let openFile = async () => {
+    let openFile = () => {
         //This will create an embeddable link from the input field if possible
         convertGoogleLinkToEmbeddableLink(inputValue)
             //If possible -> dispatch "picked"
             .then(url => dispatch("picked", url))
             //If not possible -> the URL is not accessible to the user
             .catch(() => { showInvalidUrlError = true })
+    }
+
+    let createTestFile = () => {
+        createGoogleTestFile().then((url) => {
+            dispatch("picked", url)
+        });
     }
 </script>
 
@@ -101,6 +107,11 @@
             <img class="icon-right" alt="google drive icon" src="assets/google-drive-icon.svg" />
         </div>
     </Button>
+    <!-- 
+        <Button importance="secondary" on:click={() => createTestFile()}>
+            <span class="text">Test creation</span>
+        </Button>
+    -->
     {#if showSharingError}
         <label class="error-label" for="open-picker">
             The file you picked is not a shared file. Please click <a href={createFileShareLink(inputValue)} target="_blank">here</a> to enable file sharing.
