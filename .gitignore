@@ -1,4 +1,4 @@
-settings_*.json
+settings*.json
 /node_modules
 /.vs
 /.vscode
