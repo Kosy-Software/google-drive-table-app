@@ -1,0 +1,15 @@
+{
+    "google": {
+        "api_key": "AIzaSyDFUoIEXWGk0NPtqPjCadqnEpcgxydw9ko",
+        "client_id": "1055348097262-m31jmp68886tmq7hmsa7pgg0fopb9dot.apps.googleusercontent.com"
+    },
+    "devServer": {
+        "port": 5500,
+        "host": "local.dev.com",
+        "ssl": {
+            "keyPath": "./ssl/server.key",
+            "certPath": "./ssl/server.pem",
+            "caPath": "./ssl/rootCA.pem"
+        }
+    }
+}
