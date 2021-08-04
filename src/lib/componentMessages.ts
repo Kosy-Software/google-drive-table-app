@@ -2,6 +2,10 @@ export type PickedEvent = {
     "picked": string;
 }
 
+export type CreatedEvent = {
+    "created": string;
+}
+
 export type SignedInEvent = {
     "signed-in": any;
 }

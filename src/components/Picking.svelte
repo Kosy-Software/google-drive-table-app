@@ -1,15 +1,19 @@
 <script lang="ts">
-    import type { GoogleDriveUrlPicked, PickedEvent } from "../lib/componentMessages";
-    import { hasValidGoogleFormat, createFileShareLink, convertGoogleLinkToEmbeddableLink, createGoogleTestFile } from "../lib/googleDrive";
-    import { openPopup } from "../lib/openPopup";
     import { createEventDispatcher, onDestroy } from "svelte";
     import Button from "@kosy/kosy-svelte-components/Button.svelte";
+    import type { ClientInfo } from "@kosy/kosy-app-api/types";
+    import type { GoogleDriveUrlPicked, PickedEvent } from "../lib/componentMessages";
+    import { hasValidGoogleFormat, createFileShareLink, convertGoogleLinkToEmbeddableLink } from "../lib/googleDrive";
+    import { openPopup } from "../lib/openPopup";
+    import Creating from "./Creating.svelte";
 
     const dispatch = createEventDispatcher<PickedEvent>();
+    export let currentClient: ClientInfo;
 
     let showSharingError = false;
     let showInvalidUrlError = false;
     let inputValue = "";
+    let createFile = false;
     $: inputIsEmpty = inputValue === "";
     $: showValidationError = !inputIsEmpty && !hasValidGoogleFormat(inputValue);
     $: inputIsValid = !inputIsEmpty && !(showValidationError || showSharingError || showInvalidUrlError)
@@ -47,10 +51,8 @@
             .catch(() => { showInvalidUrlError = true })
     }
 
-    let createTestFile = () => {
-        createGoogleTestFile().then((url) => {
-            dispatch("picked", url)
-        });
+    let openCreatedFile = (url: string) => {
+        dispatch("picked", url);
     }
 </script>
 
@@ -81,45 +83,47 @@
 </style>
 
 <div class="center-content picking">
-    <div>
-        <h3>Embed google drive</h3>
-        <p>
-            In Google Docs/Drive, click the Share button,<br />
-            copy the link and paste below
-        </p>
-    </div>
-    <div class="gap" />
-    <input 
-        type="text" 
-        placeholder="E.g. https://drive.google.com/..." 
-        class:invalid={!inputIsEmpty && !inputIsValid}
-        class:valid={inputIsValid}
-        bind:value={inputValue} 
-        on:input={() => { showSharingError = false; showInvalidUrlError = false; } }
-    />
-    <Button importance="primary" on:click={() => openFile()} disabled={ !inputIsValid }>
-        <span class="text">Open file</span>
-    </Button>
-    <p>OR</p>
-    <Button importance="secondary" on:click={() => openGoogleDriveFilePicker()}>
-        <span class="text">Pick a file</span>
+    {#if createFile}
+        <Creating {currentClient} on:created={(urlEvent) => openCreatedFile(urlEvent.detail)}></Creating>
+    {:else}
         <div>
-            <img class="icon-right" alt="google drive icon" src="assets/google-drive-icon.svg" />
+            <h3>Embed google drive</h3>
+            <p>
+                In Google Docs/Drive, click the Share button,<br />
+                copy the link and paste below
+            </p>
         </div>
-    </Button>
-    <!-- 
-        <Button importance="secondary" on:click={() => createTestFile()}>
-            <span class="text">Test creation</span>
+        <div class="gap" />
+        <input
+            type="text"
+            placeholder="E.g. https://drive.google.com/..."
+            class:invalid={!inputIsEmpty && !inputIsValid}
+            class:valid={inputIsValid}
+            bind:value={inputValue}
+            on:input={() => { showSharingError = false; showInvalidUrlError = false; } }
+        />
+        <Button importance="primary" on:click={() => openFile()} disabled={ !inputIsValid }>
+            <span class="text">Open file</span>
         </Button>
-    -->
-    {#if showSharingError}
-        <label class="error-label" for="open-picker">
-            The file you picked is not a shared file. Please click <a href={createFileShareLink(inputValue)} target="_blank">here</a> to enable file sharing.
-        </label>
-    {/if}
-    {#if showInvalidUrlError}
-        <label class="error-label" for="open-picker">
-            The file you tried to share with the table is not available to you.
-        </label>
+        <p>OR</p>
+        <div class="buttons">
+            <Button importance="secondary" on:click={() => openGoogleDriveFilePicker()}>
+                <span class="text">Pick a file</span>
+                <img class="icon-right" alt="google drive icon" src="assets/google-drive-icon.svg" />
+            </Button>
+            <Button importance="secondary" on:click={() => createFile = true}>
+                <span class="text">Create new file <big style="color: black;">+</big></span>
+            </Button>
+        </div>
+        {#if showSharingError}
+            <label class="error-label" for="open-picker">
+                The file you picked is not a shared file. Please click <a href={createFileShareLink(inputValue)} target="_blank">here</a> to enable file sharing.
+            </label>
+        {/if}
+        {#if showInvalidUrlError}
+            <label class="error-label" for="open-picker">
+                The file you tried to share with the table is not available to you.
+            </label>
+        {/if}
     {/if}
 </div>

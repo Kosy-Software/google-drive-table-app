@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { AppMessage } from './lib/appMessages';
-    import type { AppState } from './lib/appState';
+    import type { AppState, ViewState } from './lib/appState';
     import type { ClientInfo, InitialInfo } from '@kosy/kosy-app-api/types';
     import { KosyApi } from '@kosy/kosy-app-api';
     import { getUserIsSignedIntoGoogle } from './lib/googleDrive';
@@ -8,11 +8,13 @@
     import Viewing from "./components/Viewing.svelte";
     import Picking from "./components/Picking.svelte";
     import Waiting from "./components/Waiting.svelte";
+    import SignInToGoogle from './components/SignInToGoogle.svelte';
 
     let state: AppState = { googleDriveUrl: null };
     let initializer: ClientInfo;
     let currentClient: ClientInfo;
     let currentUserIsSignedIntoGoogle: boolean = false;
+    let viewState: ViewState;
 
     let kosyApi = new KosyApi<AppState, AppMessage, AppMessage>({
         onClientHasLeft: (clientUuid) => onClientHasLeft(clientUuid),
@@ -38,6 +40,15 @@
 
         //If this is the first client, the currentAppState will be empty. 
         //Don't set the state but use the default one
+        if (initialInfo.currentClientUuid == initialInfo.initializerClientUuid) {
+            viewState = "picking";
+        } else {
+            if (initialInfo.currentAppState.googleDriveUrl) {
+                viewState = "viewing";
+            } else {
+                viewState = "waiting";
+            }
+        }
         state = initialInfo.currentAppState ?? state;
     })
 
@@ -63,7 +74,8 @@
         switch (message.type) {
             case "receive-google-drive-url":
                 log("Received a message from Kosy: ", message);
-                state.googleDriveUrl = message.payload;
+                state = { ...state, googleDriveUrl: message.payload };
+                viewState = "viewing";
                 break;
         }
     }        
@@ -82,6 +94,9 @@
     function log (...message: any) {
         console.log(`${currentClient?.clientName ?? "New user"} logged: `, ...message);
     }
+
+    let googleApiKey = __GOOGLE_API_KEY__ ;
+    let googleClientId = __GOOGLE_CLIENT_ID__;
 </script>
 
 {#await initializationPromise}
@@ -94,17 +109,19 @@
         </div>
     {/await}
 {:then}
-    {#if state.googleDriveUrl && currentUserIsSignedIntoGoogle}
-        <Viewing {initializer} {currentClient} url={state.googleDriveUrl} />
-    {:else if currentClient.clientUuid == initializer.clientUuid && currentUserIsSignedIntoGoogle}
-        <Picking on:picked={(event) => driveUrlPicked(event.detail)} />
-    {:else}
-        <Waiting {initializer} {currentClient} {currentUserIsSignedIntoGoogle} googleDriveUrl={state.googleDriveUrl} on:signed-in={() => refreshSignedInWithGoogle()} />
+    {#if !currentUserIsSignedIntoGoogle}
+        <SignInToGoogle {initializer} {currentClient} url={state.googleDriveUrl} on:signed-in={() => refreshSignedInWithGoogle()} />
+    {:else if viewState === "viewing"}
+        <Viewing {initializer} {currentClient} url={state.googleDriveUrl} />    
+    {:else if viewState === "picking"}
+        <Picking {currentClient} on:picked={(event) => driveUrlPicked(event.detail)} />
+    {:else if viewState === "waiting"}
+        <Waiting {initializer} />
     {/if}
 {:catch error}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <div class="center-content">
         <h2 style="color: red"><i class="fas fa-exclamation-circle"></i> Oops</h2>
-        <span style="color: red">An error has occured while initializing the google drive app</span>
+        <span style="color: red">An error has occured while initializing the google drive app { googleApiKey } { googleClientId }</span>
     </div>
 {/await}

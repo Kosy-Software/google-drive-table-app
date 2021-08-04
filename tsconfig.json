@@ -1,7 +1,6 @@
 {
     "extends": "@tsconfig/svelte/tsconfig.json",
     "compilerOptions": {
-        "resolveJsonModule": true,
         "types": [
             "google.picker",
             "gapi",

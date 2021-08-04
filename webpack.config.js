@@ -6,23 +6,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 const fs = require("fs");
-const devServerSettings = require("./settings.json").devServer || {};
 const sveltePreprocess = require("svelte-preprocess");
-
-const getDevServerSslSettings = () => {
-    if (!devServerSettings.ssl) return false;
-
-    const sslSettings = devServerSettings.ssl;
-    if (sslSettings.certPath) {
-        return {
-            cert: fs.readFileSync(resolve(sslSettings.certPath)),
-            key: sslSettings.keyPath ? fs.readFileSync(resolve(sslSettings.keyPath)) : undefined,
-            ca: sslSettings.caPath ? fs.readFileSync(resolve(sslSettings.caPath)) : undefined
-        };
-    } else {
-        return sslSettings;
-    }
-}
 
 const CONFIG = {
     mainAppEntry: "./src/index.ts",
@@ -31,10 +15,7 @@ const CONFIG = {
     outputDir: "./dist",
     assetsDir: "./src/assets",
     mainAppTemplate: "./src/index.html",
-    pickerTemplate: "./src/picker.html",
-    devServerPort: devServerSettings.port,
-    devServerHost: devServerSettings.host,
-    devServerSsl: getDevServerSslSettings()
+    pickerTemplate: "./src/picker.html"
 }
 
 const getEntryPoints = (isProduction) => {
@@ -51,10 +32,38 @@ const getEntryPoints = (isProduction) => {
     };
 }
 
+const getConfig = (isProduction) =>
+    isProduction ? require("./settings.json") : require("./settings_test.json");
+
+const getDevServerSettings = (isProduction) => {
+    const devServerSettings = getConfig(isProduction).devServer || {};
+    let devServerSsl;
+    const sslSettings = devServerSettings.ssl;
+    if (sslSettings.certPath) {
+        devServerSsl = {
+            cert: fs.readFileSync(resolve(sslSettings.certPath)),
+            key: sslSettings.keyPath ? fs.readFileSync(resolve(sslSettings.keyPath)) : undefined,
+            ca: sslSettings.caPath ? fs.readFileSync(resolve(sslSettings.caPath)) : undefined
+        };
+    } else {
+        devServerSsl = sslSettings;
+    }
+    return {
+        host: devServerSettings.host,
+        port: devServerSettings.port,
+        ssl: devServerSsl
+    };
+}
+
 const getPlugins = (isProduction) => {
+    const googleSettings = getConfig(isProduction).google || {};
     let basePlugins = [
         //Cleans the distribution directory
         new CleanWebpackPlugin(),
+        new webpack.DefinePlugin({
+            __GOOGLE_API_KEY__: JSON.stringify(googleSettings.api_key),
+            __GOOGLE_CLIENT_ID__: JSON.stringify(googleSettings.client_id)
+        }),
         new HtmlWebpackPlugin({            
             filename: "index.html",
             hash: true,
@@ -94,6 +103,7 @@ const getPlugins = (isProduction) => {
 
 module.exports = (env, options) => {
     const isProduction = options.mode === "production";
+    const devServerSettings = getDevServerSettings(isProduction);
 
     return {
         entry: getEntryPoints(isProduction),
@@ -105,13 +115,13 @@ module.exports = (env, options) => {
         mode: isProduction ? "production" : "development",
         devtool: isProduction ? undefined : "eval-source-map",
         devServer: {
-            https: CONFIG.devServerSsl,
+            https: devServerSettings.ssl,
             hot: true,
             publicPath: "/",
             contentBase: resolve(CONFIG.assetsDir),
             contentBasePublicPath: "/assets",
-            host: CONFIG.devServerHost,
-            port: CONFIG.devServerPort
+            host: devServerSettings.host,
+            port: devServerSettings.port
         },
         module: {
             rules: [

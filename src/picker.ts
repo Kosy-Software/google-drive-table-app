@@ -1,6 +1,5 @@
 import type { GoogleDriveUrlPicked } from './lib/componentMessages';
 import { authorizeWithGoogle } from './lib/googleDrive';
-import settings from "./../settings.json";
 
 module Kosy.Integration.GoogleDrive {
     //The google driver picker wraps google's drive picker with extra information and message passing 
@@ -14,7 +13,7 @@ module Kosy.Integration.GoogleDrive {
                 window.close();
             }
 
-            let picker = await this.createPicker(authResponse.access_token, settings.google.api_key);
+            let picker = await this.createPicker(authResponse.access_token, __GOOGLE_API_KEY__);
 
             //Makes the picker appear on-screen
             picker.setVisible(true);

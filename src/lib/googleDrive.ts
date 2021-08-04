@@ -1,5 +1,3 @@
-import settings from "./../../settings.json";
-
 const googleRegex = new RegExp("^(https://\\w+.google.com)");
 const googleDriveRegex = new RegExp("^(https://(drive|docs).google.com)", "i");
 //Just matches the first file identifier it comes across (google file identifiers are always exactly 25 characters long)
@@ -21,7 +19,7 @@ export async function convertGoogleLinkToEmbeddableLink (url: string): Promise<s
     let googleDriveFileId = parseGoogleDriveFileId(url);
     await loadGoogleApi("client");
     let authResponse = await authorizeWithGoogle();
-    gapi.client.setApiKey(settings.google.api_key);
+    gapi.client.setApiKey(__GOOGLE_API_KEY__);
     gapi.client.setToken({ access_token: authResponse.access_token });
     try {
         let response = await gapi.client.request({ path: `https://www.googleapis.com/drive/v3/files/${googleDriveFileId}?fields=webViewLink` });
@@ -70,7 +68,7 @@ async function withGoogleAuthScope<X>(fx: (googleAuth: gapi.auth2.GoogleAuth) =>
     await loadGoogleApi("auth2");
     return gapi.auth2
         .init({
-            client_id: settings.google.client_id,                        
+            client_id: __GOOGLE_CLIENT_ID__,                        
             scope: FILEAPISCOPE
         })
         .then(() => fx(gapi.auth2.getAuthInstance()));
@@ -124,16 +122,37 @@ async function loadGoogleApiLibrary(apiKey: string, version: string): Promise<vo
     });
 }
 
-export async function createGoogleTestFile(): Promise<any> {
-    return new Promise(async (resolve, reject) => {        
-        let link: string = await withGoogleAuthScope(async (googleAuth) => {
+export type GoogleDriveFileType = "document" | "sheet" | "slide";
+export async function createGoogleDriveFile(fileType: GoogleDriveFileType, fileName: string): Promise<string> {
+    return new Promise<string>(async (resolve, reject) => {        
+        let link = await withGoogleAuthScope(async (googleAuth) => {
             await loadGoogleApi("client");
             await loadGoogleApiLibrary("drive", "v3");
+            let fileExtension: string;
+            let mimeType: string;
+            switch (fileType) {
+                case "document":
+                    fileExtension = "docx";
+                    mimeType = "application/vnd.google-apps.document"
+                    break;
+                case "sheet":
+                    fileExtension = "xlsx";
+                    mimeType = "application/vnd.google-apps.spreadsheet"
+                    break;
+                case "slide":
+                    fileExtension = "pptx";
+                    mimeType = "application/vnd.google-apps.presentation"
+                    break;
+                default:
+                    fileExtension = "docx";
+                    mimeType = "application/vnd.google-apps.document"
+                    break;
+            }
             let user = googleAuth.currentUser.get()
             let fileResponse = await gapi.client.drive.files.create({
                 resource: {
-                    name: "test.docx",
-                    mimeType: "application/vnd.google-apps.document"                    
+                    name: `${fileName}.${fileExtension}`,
+                    mimeType: mimeType
                 },                
                 fields: "id,webViewLink",                
             });

@@ -61,3 +61,13 @@ input {
         color: colors.$color-danger;
     }
 }
+
+.buttons {
+    display: flex;
+    flex-flow: row;
+    gap: 12px;
+
+    .re-button {
+        flex: 50%;
+    }
+}
