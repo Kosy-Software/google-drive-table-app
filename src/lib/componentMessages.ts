@@ -4,6 +4,7 @@ export type PickedEvent = {
 
 export type CreatedEvent = {
     "created": string;
+    "canceled": unknown;
 }
 
 export type SignedInEvent = {
