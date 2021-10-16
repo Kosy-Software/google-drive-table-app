@@ -39,7 +39,7 @@
         if (initialInfo.currentClientUuid == initialInfo.initializerClientUuid) {
             viewState = "picking";
         } else {
-            if (initialInfo.currentAppState.googleDriveUrl) {
+            if (initialInfo.currentAppState?.googleDriveUrl) {
                 viewState = "viewing";
             } else {
                 viewState = "waiting";
@@ -109,6 +109,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <div class="center-content">
         <h2 style="color: red"><i class="fas fa-exclamation-circle"></i> Oops</h2>
-        <span style="color: red">An error has occured while initializing the google drive app { googleApiKey } { googleClientId }</span>
+        <span style="color: red">An error has occured while initializing the google drive app: { JSON.stringify(error) }</span>
     </div>
 {/await}
