@@ -41,7 +41,8 @@ const getDevServerSettings = (isProduction) => {
 
     const devServerSettings = getConfig(isProduction).devServer || {};
     let devServerSsl;
-    if (devServerSettings?.ssl?.certPath) {
+    if (((devServerSettings || {}).ssl || {}).certPath) {
+        let sslSettings = devServerSettings.ssl;
         devServerSsl = {
             cert: fs.readFileSync(resolve(sslSettings.certPath)),
             key: sslSettings.keyPath ? fs.readFileSync(resolve(sslSettings.keyPath)) : undefined,
