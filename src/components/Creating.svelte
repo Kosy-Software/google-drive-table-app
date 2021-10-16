@@ -5,13 +5,20 @@
     import { currentClient } from "../stores";
     import Button from "@kosy/kosy-svelte-components/Button.svelte";
 
+    let isCreating = false;
     const dispatch = createEventDispatcher<CreatedEvent>();
 
     const getFileName = () => $currentClient.clientLocation.table.tableName + "_" + (new Date().toISOString().replace(/\D/g, ""));
 
     const createFile = async (fileType: GoogleDriveFileType) => {
-        let url = await createGoogleDriveFile(fileType, getFileName());
-        dispatch("created", url);
+        isCreating = true;
+        try {
+            let url = await createGoogleDriveFile(fileType, getFileName());
+            dispatch("created", url);
+        } catch (e) {
+            console.error(e);
+            isCreating = false;
+        }
     }
 
     const cancelCreateFile = () => {
@@ -72,31 +79,41 @@
 </style>
 
 <div class="center-content creating">
-    <div>
-        <h3>Create new file</h3>
-        <p>
-            The file will be created on google drive and<br />
-            will be available to participants
-        </p>
-    </div>
-    <div class="gap" />
-    <div class="big-buttons">
-        <button class="big-button" on:click={() => createFile("document")}>
-            <img alt="google doc" src="assets/google-docs-icon.svg" />
-            <span>Google Doc</span>
-        </button>
-        <button class="big-button" on:click={() => createFile("sheet")}>
-            <img alt="google sheet" src="assets/google-sheets-icon.svg" />
-            <span>Google Sheet</span>
-        </button>
-        <button class="big-button" on:click={() => createFile("slide")}>
-            <img alt="google slide" src="assets/google-slides-icon.svg" />
-            <span>Google Slide</span>
-        </button>
-    </div>
-    <p>OR</p>
-    <Button importance="secondary" on:click={() => cancelCreateFile()}>
-        <span class="text">Share an existing file</span>
-        <img class="icon-right" alt="google drive icon" src="assets/google-drive-icon.svg" />
-    </Button>
+    {#if isCreating}
+        <div>
+            <h3>Your file is being created.</h3>
+            <div class="gap" />
+            <div>
+                <img class="waiting-icon" alt="waiting" src="assets/waiting.svg" />
+            </div>
+        </div>
+    {:else}
+        <div>
+            <h3>Create new file</h3>
+            <p>
+                The file will be created on google drive and<br />
+                will be available to participants
+            </p>
+        </div>
+        <div class="gap" />
+        <div class="big-buttons">
+            <button class="big-button" on:click={() => createFile("document")}>
+                <img alt="google doc" src="assets/google-docs-icon.svg" />
+                <span>Google Doc</span>
+            </button>
+            <button class="big-button" on:click={() => createFile("sheet")}>
+                <img alt="google sheet" src="assets/google-sheets-icon.svg" />
+                <span>Google Sheet</span>
+            </button>
+            <button class="big-button" on:click={() => createFile("slide")}>
+                <img alt="google slide" src="assets/google-slides-icon.svg" />
+                <span>Google Slide</span>
+            </button>
+        </div>
+        <p>OR</p>
+        <Button importance="secondary" on:click={() => cancelCreateFile()}>
+            <span class="text">Share an existing file</span>
+            <img class="icon-right" alt="google drive icon" src="assets/google-drive-icon.svg" />
+        </Button>
+    {/if}
 </div>
