@@ -98,7 +98,7 @@ async function authorizeAppForGoogleDrive(): Promise<gapi.auth2.AuthResponse> {
                         .catch((e) => reject(e));
                 }
             } catch(error) {
-                reject ();
+                reject (error);
             }
         });
     })
@@ -109,7 +109,7 @@ async function loadGoogleApi(apiKey: string): Promise<any> {
     return new Promise((resolve, reject) =>
         gapi.load(apiKey, {
             callback: () => resolve({}),
-            onerror: () => reject (),
+            onerror: (e: any) => reject (e),
             timeout: 5000,
             ontimeout: () => reject ()
         })
