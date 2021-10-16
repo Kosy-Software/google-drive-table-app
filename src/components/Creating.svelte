@@ -3,6 +3,7 @@
     import type { CreatedEvent } from "../lib/componentMessages";
     import { createGoogleDriveFile, GoogleDriveFileType } from "../lib/googleDrive";
     import { currentClient } from "../stores";
+    import Button from "@kosy/kosy-svelte-components/Button.svelte";
 
     const dispatch = createEventDispatcher<CreatedEvent>();
 
@@ -12,9 +13,15 @@
         let url = await createGoogleDriveFile(fileType, getFileName());
         dispatch("created", url);
     }
+
+    const cancelCreateFile = () => {
+        dispatch("canceled");
+    }
 </script>
 
 <style lang="scss">
+    @use "../styles/_colors.scss" as colors;
+
     .creating {
         row-gap: 1em;
         font-size: 16px;
@@ -32,8 +39,11 @@
         .big-buttons {
             display: flex;
             justify-content: space-between;
+            gap: 20px;
 
             .big-button {
+                background: white;
+                cursor: pointer;
                 width: 180px;
                 height: 180px;
                 padding: 36px 36px 30px;
@@ -42,7 +52,20 @@
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                gap: 24px;
+                gap: 16px;
+                background: white;
+                border: 1px solid colors.$color-grey-border;
+                color: colors.$color-grey-dark;
+                &:hover {
+                    background: colors.$color-grey-light;
+                }
+                &:active {
+                    background: colors.$color-grey-border;
+                }
+                &:disabled {
+                    color: colors.$color-grey-default;
+                    border-color: colors.$color-grey-default;
+                }
             }
         }
     }
@@ -56,6 +79,7 @@
             will be available to participants
         </p>
     </div>
+    <div class="gap" />
     <div class="big-buttons">
         <button class="big-button" on:click={() => createFile("document")}>
             <img alt="google doc" src="assets/google-docs-icon.svg" />
@@ -70,4 +94,9 @@
             <span>Google Slide</span>
         </button>
     </div>
+    <p>OR</p>
+    <Button importance="secondary" on:click={() => cancelCreateFile()}>
+        <span class="text">Share an existing file</span>
+        <img class="icon-right" alt="google drive icon" src="assets/google-drive-icon.svg" />
+    </Button>
 </div>

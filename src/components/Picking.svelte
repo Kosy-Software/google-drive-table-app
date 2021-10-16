@@ -82,7 +82,10 @@
 
 <div class="center-content picking">
     {#if createFile}
-        <Creating on:created={(urlEvent) => openCreatedFile(urlEvent.detail)}></Creating>
+        <Creating 
+            on:created={(urlEvent) => openCreatedFile(urlEvent.detail)}
+            on:canceled={() => createFile = false }
+        ></Creating>
     {:else}
         <div>
             <h3>Embed google drive</h3>
