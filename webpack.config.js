@@ -36,22 +36,28 @@ const getConfig = (isProduction) =>
     isProduction ? require("./settings.json") : require("./settings_test.json");
 
 const getDevServerSettings = (isProduction) => {
+    //Don't run the dev server in prod...
+    if (isProduction) return undefined;
+
     const devServerSettings = getConfig(isProduction).devServer || {};
     let devServerSsl;
-    const sslSettings = devServerSettings.ssl;
-    if (sslSettings.certPath) {
+    if (devServerSettings?.ssl?.certPath) {
         devServerSsl = {
             cert: fs.readFileSync(resolve(sslSettings.certPath)),
             key: sslSettings.keyPath ? fs.readFileSync(resolve(sslSettings.keyPath)) : undefined,
             ca: sslSettings.caPath ? fs.readFileSync(resolve(sslSettings.caPath)) : undefined
         };
     } else {
-        devServerSsl = sslSettings;
+        devServerSsl = devServerSettings.ssl;
     }
     return {
+        https: devServerSsl,
+        hot: true,
+        publicPath: "/",
+        contentBase: resolve(CONFIG.assetsDir),
+        contentBasePublicPath: "/assets",
         host: devServerSettings.host,
-        port: devServerSettings.port,
-        ssl: devServerSsl
+        port: devServerSettings.port
     };
 }
 
@@ -60,6 +66,7 @@ const getPlugins = (isProduction) => {
     let basePlugins = [
         //Cleans the distribution directory
         new CleanWebpackPlugin(),
+        //Replaces all keys with the value in the entire application
         new webpack.DefinePlugin({
             __GOOGLE_API_KEY__: JSON.stringify(googleSettings.api_key),
             __GOOGLE_CLIENT_ID__: JSON.stringify(googleSettings.client_id)
@@ -103,7 +110,6 @@ const getPlugins = (isProduction) => {
 
 module.exports = (env, options) => {
     const isProduction = options.mode === "production";
-    const devServerSettings = getDevServerSettings(isProduction);
 
     return {
         entry: getEntryPoints(isProduction),
@@ -114,15 +120,7 @@ module.exports = (env, options) => {
         },        
         mode: isProduction ? "production" : "development",
         devtool: isProduction ? undefined : "eval-source-map",
-        devServer: {
-            https: devServerSettings.ssl,
-            hot: true,
-            publicPath: "/",
-            contentBase: resolve(CONFIG.assetsDir),
-            contentBasePublicPath: "/assets",
-            host: devServerSettings.host,
-            port: devServerSettings.port
-        },
+        devServer: getDevServerSettings(isProduction),
         module: {
             rules: [
                 //Allows use of typescript
