@@ -1,7 +1,5 @@
 <script lang="ts">
-    import type { ClientInfo } from "@kosy/kosy-app-api/types";
-
-    export let initializer: ClientInfo;
+    import { initializer } from "../stores";
 </script>
 
 <style lang="scss">
@@ -20,7 +18,7 @@
 
 <div class="center-content waiting">
     <h3>Google Drive sharing</h3>
-    <p>{initializer.clientName} is picking a file to share</p>
+    <p>{$initializer.clientName} is picking a file to share</p>
     <div class="gap"></div>
     <div>
         <img class="waiting-icon" alt="waiting" src="assets/waiting.svg" />

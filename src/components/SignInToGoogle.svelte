@@ -3,10 +3,8 @@
     import type { SignedInEvent } from "../lib/componentMessages";
     import { createEventDispatcher } from "svelte";
     import { authorizeWithGoogle, getUserIsSignedIntoGoogle } from "../lib/googleDrive";
-    import type { ClientInfo } from "@kosy/kosy-app-api/types";
+    import { currentClient, initializer } from "../stores";
 
-    export let initializer: ClientInfo;
-    export let currentClient: ClientInfo;
     export let url: string;
 
     const dispatch = createEventDispatcher<SignedInEvent>();
@@ -27,10 +25,10 @@
 
 <div class="center-content waiting">
     <h3>Google Drive sharing</h3>
-    {#if initializer.clientUuid == currentClient.clientUuid}
+    {#if $initializer.clientUuid == $currentClient.clientUuid}
         <p>To start sharing a file, please log in with google</p>
     {:else if url}
-        <p>A file has been shared by {initializer.clientName}, please log in with google to view it</p>
+        <p>A file has been shared by {$initializer.clientName}, please log in with google to view it</p>
     {:else}
         <p>Please log in with google</p>
     {/if}

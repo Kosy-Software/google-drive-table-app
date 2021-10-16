@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { AppMessage } from './lib/appMessages';
     import type { AppState, ViewState } from './lib/appState';
-    import type { ClientInfo, InitialInfo } from '@kosy/kosy-app-api/types';
+    import type { InitialInfo } from '@kosy/kosy-app-api/types';
     import { KosyApi } from '@kosy/kosy-app-api';
     import { getUserIsSignedIntoGoogle } from './lib/googleDrive';
 
@@ -9,10 +9,9 @@
     import Picking from "./components/Picking.svelte";
     import Waiting from "./components/Waiting.svelte";
     import SignInToGoogle from './components/SignInToGoogle.svelte';
+    import { initializer, currentClient, initialInfo as initialInfoStore } from './stores';
 
     let state: AppState = { googleDriveUrl: null };
-    let initializer: ClientInfo;
-    let currentClient: ClientInfo;
     let currentUserIsSignedIntoGoogle: boolean = false;
     let viewState: ViewState;
 
@@ -20,8 +19,8 @@
         onClientHasLeft: (clientUuid) => onClientHasLeft(clientUuid),
         onReceiveMessageAsHost: message => message,
         onReceiveMessageAsClient: (message) => { processMessage(message) },
-        onRequestState: () => getState(),
-        onProvideState: (newState: AppState) => setState(newState)
+        onRequestState: () => state,
+        onProvideState: (newState: AppState) => state = newState
     });
 
     //Times out after 3 seconds to show a loading screen if necessary
@@ -33,10 +32,7 @@
     let initializationPromise: Promise<void> = kosyApi.startApp().then(async (initialInfo: InitialInfo<AppState>) => {
         //Determine if the current user is signed into google
         currentUserIsSignedIntoGoogle = await getUserIsSignedIntoGoogle()
-        
-        //For this app, it's important to know who initialized the app
-        initializer = initialInfo.clients[initialInfo.initializerClientUuid];
-        currentClient = initialInfo.clients[initialInfo.currentClientUuid];
+        initialInfoStore.set(initialInfo);
 
         //If this is the first client, the currentAppState will be empty. 
         //Don't set the state but use the default one
@@ -52,19 +48,10 @@
         state = initialInfo.currentAppState ?? state;
     })
 
-    //Simplest to implement -> just return the current state
-    function getState() {
-        return state;
-    }
-
-    function setState(newState: AppState) {
-        state = newState;
-    }
-
     //If no google drive url has been picked, and the initializer is gone -> end the integration
     //Otherwise, ignore.
     function onClientHasLeft(clientUuid: string) {
-        if (clientUuid === initializer.clientUuid && !state.googleDriveUrl) {
+        if (clientUuid === $initializer.clientUuid && !state.googleDriveUrl) {
             kosyApi.stopApp();
         }
     }
@@ -92,7 +79,7 @@
 
     //The reason we pulled this out, is because it's easy to change the logging to e.g. console.debug, console.trace, console.table, etc. etc.
     function log (...message: any) {
-        console.log(`${currentClient?.clientName ?? "New user"} logged: `, ...message);
+        console.log(`${$currentClient?.clientName ?? "New user"} logged: `, ...message);
     }
 
     let googleApiKey = __GOOGLE_API_KEY__ ;
@@ -110,13 +97,13 @@
     {/await}
 {:then}
     {#if !currentUserIsSignedIntoGoogle}
-        <SignInToGoogle {initializer} {currentClient} url={state.googleDriveUrl} on:signed-in={() => refreshSignedInWithGoogle()} />
+        <SignInToGoogle url={state.googleDriveUrl} on:signed-in={() => refreshSignedInWithGoogle()} />
     {:else if viewState === "viewing"}
-        <Viewing {initializer} {currentClient} url={state.googleDriveUrl} />    
+        <Viewing url={state.googleDriveUrl} />    
     {:else if viewState === "picking"}
-        <Picking {currentClient} on:picked={(event) => driveUrlPicked(event.detail)} />
+        <Picking on:picked={(event) => driveUrlPicked(event.detail)} />
     {:else if viewState === "waiting"}
-        <Waiting {initializer} />
+        <Waiting />
     {/if}
 {:catch error}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">

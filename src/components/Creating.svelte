@@ -1,14 +1,12 @@
 <script lang="ts">
-    import type { ClientInfo } from "@kosy/kosy-app-api/types";
     import { createEventDispatcher } from "svelte";
     import type { CreatedEvent } from "../lib/componentMessages";
     import { createGoogleDriveFile, GoogleDriveFileType } from "../lib/googleDrive";
-
-    export let currentClient: ClientInfo;
+    import { currentClient } from "../stores";
 
     const dispatch = createEventDispatcher<CreatedEvent>();
 
-    const getFileName = () => currentClient.clientLocation.table.tableName + "_" + (new Date().toISOString().replace(/\D/g, ""));
+    const getFileName = () => $currentClient.clientLocation.table.tableName + "_" + (new Date().toISOString().replace(/\D/g, ""));
 
     const createFile = async (fileType: GoogleDriveFileType) => {
         let url = await createGoogleDriveFile(fileType, getFileName());

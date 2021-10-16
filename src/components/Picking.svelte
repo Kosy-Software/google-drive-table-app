@@ -1,14 +1,12 @@
 <script lang="ts">
     import { createEventDispatcher, onDestroy } from "svelte";
     import Button from "@kosy/kosy-svelte-components/Button.svelte";
-    import type { ClientInfo } from "@kosy/kosy-app-api/types";
     import type { GoogleDriveUrlPicked, PickedEvent } from "../lib/componentMessages";
     import { hasValidGoogleFormat, createFileShareLink, convertGoogleLinkToEmbeddableLink } from "../lib/googleDrive";
     import { openPopup } from "../lib/openPopup";
     import Creating from "./Creating.svelte";
 
     const dispatch = createEventDispatcher<PickedEvent>();
-    export let currentClient: ClientInfo;
 
     let showSharingError = false;
     let showInvalidUrlError = false;
@@ -84,7 +82,7 @@
 
 <div class="center-content picking">
     {#if createFile}
-        <Creating {currentClient} on:created={(urlEvent) => openCreatedFile(urlEvent.detail)}></Creating>
+        <Creating on:created={(urlEvent) => openCreatedFile(urlEvent.detail)}></Creating>
     {:else}
         <div>
             <h3>Embed google drive</h3>
