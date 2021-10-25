@@ -8,7 +8,8 @@
     let isCreating = false;
     const dispatch = createEventDispatcher<CreatedEvent>();
 
-    const getFileName = () => $currentClient.clientLocation.table.tableName + "_" + (new Date().toISOString().replace(/\D/g, ""));
+    const now = new Date ();
+    const getFileName = () => `${ $currentClient.clientLocation.table.tableName }_${ now.getFullYear() }_${ now.getMonth() + 1 }_${ now.getDate() }`;
 
     const createFile = async (fileType: GoogleDriveFileType) => {
         isCreating = true;
@@ -29,7 +30,16 @@
 <style lang="scss">
     @use "../styles/_colors.scss" as colors;
 
-    .creating {
+    .creating-icon {
+        width: 200px;
+    }
+
+    .creating {            
+        &.is-creating {
+            width: 100vw;
+            background-color: colors.$color-grey-light;
+        }
+        
         row-gap: 1em;
         font-size: 16px;
         
@@ -78,13 +88,13 @@
     }
 </style>
 
-<div class="center-content creating">
+<div class="center-content creating" class:is-creating={ isCreating }>
     {#if isCreating}
         <div>
             <h3>Your file is being created.</h3>
             <div class="gap" />
             <div>
-                <img class="waiting-icon" alt="waiting" src="assets/waiting.svg" />
+                <img class="creating-icon" alt="creating" src="assets/creating.gif" />
             </div>
         </div>
     {:else}
