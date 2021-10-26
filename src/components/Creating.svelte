@@ -31,7 +31,11 @@
     @use "../styles/_colors.scss" as colors;
 
     .creating-icon {
-        width: 200px;
+        width: 100px;
+    }
+
+    .big-gap {
+        padding-top: 32px;
     }
 
     .creating {            
@@ -91,10 +95,10 @@
 <div class="center-content creating" class:is-creating={ isCreating }>
     {#if isCreating}
         <div>
-            <h3>Your file is being created.</h3>
-            <div class="gap" />
+            <h3>Your file is being created...</h3>
+            <div class="big-gap" />
             <div>
-                <img class="creating-icon" alt="creating" src="assets/creating.gif" />
+                <img class="creating-icon" alt="creating" src="assets/creating.webp" />
             </div>
         </div>
     {:else}
