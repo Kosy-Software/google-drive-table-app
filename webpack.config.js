@@ -54,9 +54,10 @@ const getDevServerSettings = (isProduction) => {
     return {
         https: devServerSsl,
         hot: true,
-        publicPath: "/",
-        contentBase: resolve(CONFIG.assetsDir),
-        contentBasePublicPath: "/assets",
+        static: {
+            directory: resolve(CONFIG.assetsDir),
+            publicPath: "/assets"
+        },
         host: devServerSettings.host,
         port: devServerSettings.port
     };
