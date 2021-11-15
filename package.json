@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "webpack serve --mode development --compress --open",
-    "build": "webpack --mode production"
+    "start": "webpack serve --mode development --compress --open --env type=docs",
+    "start-docs": "webpack serve --mode development --compress --open --env type=docs",
+    "start-sheets": "webpack serve --mode development --compress --open --env type=sheets",
+    "start-slides": "webpack serve --mode development --compress --open --env type=slides",
+    "build": "webpack --mode production --env type=docs && webpack --mode production --env type=sheets && webpack --mode production --env type=slides"
   },
   "license": "MIT",
   "dependencies": {

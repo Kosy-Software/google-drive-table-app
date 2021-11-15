@@ -3,7 +3,10 @@ Table app for Google Drive integration
 
 ## Debugging tool
 
-https://kosy-software.github.io/kosy-debug-app/?url=https://kosy-software.github.io/google-drive-table-app
+https://kosy-software.github.io/kosy-debug-app/?url=https://kosy-software.github.io/google-drive-table-app/docs
+https://kosy-software.github.io/kosy-debug-app/?url=https://kosy-software.github.io/google-drive-table-app/sheets
+https://kosy-software.github.io/kosy-debug-app/?url=https://kosy-software.github.io/google-drive-table-app/slides
+
 
 ## Alias localhost
 Since google doesn't like people running their API's on localhost (don't ask me why...), create an alias to localhost:
@@ -59,5 +62,7 @@ To run the code, you'll need a bunch of packages installed. The package manger w
 ## To actually run the code
 If you've done all of the previous steps:
 
-- Run "yarn start" (without quotes) to run the application in development mode.
+- Run "yarn start" (without quotes) to run the application in development mode for google docs.
+- Run "yarn start-sheets" (without quotes) to run the application in development mode for google sheets.
+- Run "yarn start-slides" (without quotes) to run the application in development mode for google slides.
 - Run "yarn run build" (without quotes) to compile the application into the ./dist folder.

@@ -8,38 +8,41 @@ const webpack = require("webpack");
 const fs = require("fs");
 const sveltePreprocess = require("svelte-preprocess");
 
-const CONFIG = {
-    mainAppEntry: "./src/index.ts",
-    pickerEntry: "./src/picker.ts",
-    cssEntry: "./src/styles/style.scss",
-    outputDir: "./dist",
-    assetsDir: "./src/assets",
-    mainAppTemplate: "./src/index.html",
-    pickerTemplate: "./src/picker.html"
+const getWebpackConfig = (env) => { 
+    return {
+        mainAppEntry: "./src/index.ts",
+        pickerEntry: "./src/picker.ts",
+        cssEntry: "./src/styles/style.scss",
+        outputDir: "./dist/" + env.type,
+        assetsDir: "./src/assets",
+        mainAppTemplate: "./src/index.html",
+        pickerTemplate: "./src/picker.html"
+    }
 }
 
-const getEntryPoints = (isProduction) => {
+
+const getEntryPoints = (config, isProduction) => {
     if (isProduction) {
         return {
-            app: [resolve(CONFIG.mainAppEntry), resolve(CONFIG.cssEntry)],
-            picker: [resolve(CONFIG.pickerEntry), resolve(CONFIG.cssEntry)]
+            app: [resolve(config.mainAppEntry), resolve(config.cssEntry)],
+            picker: [resolve(config.pickerEntry), resolve(config.cssEntry)]
         };
     }
     return {
-        app: [resolve(CONFIG.mainAppEntry)],
-        style: [resolve(CONFIG.cssEntry)],
-        picker: [resolve(CONFIG.pickerEntry)]
+        app: [resolve(config.mainAppEntry)],
+        style: [resolve(config.cssEntry)],
+        picker: [resolve(config.pickerEntry)]
     };
 }
 
-const getConfig = (isProduction) =>
+const getAppSettings = (isProduction) =>
     isProduction ? require("./settings.json") : require("./settings_test.json");
 
-const getDevServerSettings = (isProduction) => {
+const getDevServerSettings = (config, isProduction) => {
     //Don't run the dev server in prod...
     if (isProduction) return undefined;
 
-    const devServerSettings = getConfig(isProduction).devServer || {};
+    const devServerSettings = getAppSettings(isProduction).devServer || {};
     let devServerSsl;
     if (((devServerSettings || {}).ssl || {}).certPath) {
         let sslSettings = devServerSettings.ssl;
@@ -55,7 +58,7 @@ const getDevServerSettings = (isProduction) => {
         https: devServerSsl,
         hot: true,
         static: {
-            directory: resolve(CONFIG.assetsDir),
+            directory: resolve(config.assetsDir),
             publicPath: "/assets"
         },
         host: devServerSettings.host,
@@ -63,27 +66,28 @@ const getDevServerSettings = (isProduction) => {
     };
 }
 
-const getPlugins = (isProduction) => {
-    const googleSettings = getConfig(isProduction).google || {};
+const getPlugins = (config, isProduction, env) => {
+    const googleSettings = getAppSettings(isProduction).google || {};
     let basePlugins = [
         //Cleans the distribution directory
         new CleanWebpackPlugin(),
         //Replaces all keys with the value in the entire application
         new webpack.DefinePlugin({
             __GOOGLE_API_KEY__: JSON.stringify(googleSettings.api_key),
-            __GOOGLE_CLIENT_ID__: JSON.stringify(googleSettings.client_id)
+            __GOOGLE_CLIENT_ID__: JSON.stringify(googleSettings.client_id),
+            __BUILD_TYPE__: JSON.stringify(env.type)
         }),
         new HtmlWebpackPlugin({            
             filename: "index.html",
             hash: true,
-            template: resolve(CONFIG.mainAppTemplate),            
+            template: resolve(config.mainAppTemplate),            
             //Should correspond to the entry points for admin
             chunks: isProduction ? ["app"] : ["app", "style"]            
         }),
         new HtmlWebpackPlugin({
             filename: "picker.html",
             hash: true,
-            template: resolve(CONFIG.pickerTemplate),
+            template: resolve(config.pickerTemplate),
             //Should correspond to the entry points for picker
             chunks: isProduction ? ["picker"] : ["picker", "style"]
         })
@@ -112,17 +116,18 @@ const getPlugins = (isProduction) => {
 
 module.exports = (env, options) => {
     const isProduction = options.mode === "production";
+    const config = getWebpackConfig(env);
 
     return {
-        entry: getEntryPoints(isProduction),
+        entry: getEntryPoints(config, isProduction),
         output: {
-            path: resolve(CONFIG.outputDir),
+            path: resolve(config.outputDir),
             publicPath: process.env.ASSET_PATH,
             filename: isProduction ? "[name].[chunkhash].js" : "[name].js",
         },        
         mode: isProduction ? "production" : "development",
         devtool: isProduction ? undefined : "eval-source-map",
-        devServer: getDevServerSettings(isProduction),
+        devServer: getDevServerSettings(config, isProduction),
         module: {
             rules: [
                 //Allows use of typescript
@@ -173,6 +178,6 @@ module.exports = (env, options) => {
             },
             mainFields: ["svelte", "browser", "module", "main"]
         },
-        plugins: getPlugins(isProduction)
+        plugins: getPlugins(config, isProduction, env)
     }
 };

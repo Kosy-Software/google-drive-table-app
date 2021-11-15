@@ -122,24 +122,23 @@ async function loadGoogleApiLibrary(apiKey: string, version: string): Promise<vo
     });
 }
 
-export type GoogleDriveFileType = "document" | "sheet" | "slide";
-export async function createGoogleDriveFile(fileType: GoogleDriveFileType, fileName: string): Promise<string> {
+export async function createGoogleDriveFile(fileName: string): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {        
         let link = await withGoogleAuthScope(async (googleAuth) => {
             await loadGoogleApi("client");
             await loadGoogleApiLibrary("drive", "v3");
             let fileExtension: string;
             let mimeType: string;
-            switch (fileType) {
-                case "document":
+            switch (__BUILD_TYPE__) {
+                case "docs":
                     fileExtension = "docx";
                     mimeType = "application/vnd.google-apps.document"
                     break;
-                case "sheet":
+                case "sheets":
                     fileExtension = "xlsx";
                     mimeType = "application/vnd.google-apps.spreadsheet"
                     break;
-                case "slide":
+                case "slides":
                     fileExtension = "pptx";
                     mimeType = "application/vnd.google-apps.presentation"
                     break;
