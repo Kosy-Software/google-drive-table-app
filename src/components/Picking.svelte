@@ -134,7 +134,7 @@
             <h3>Your file is being created...</h3>
             <div class="big-gap" />
             <div>
-                <img class="creating-icon" alt="creating" src="assets/creating.webp" />
+                <img class="creating-icon" alt="creating" src="assets/creating.gif" />
             </div>
         </div>
     {:else}
