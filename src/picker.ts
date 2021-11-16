@@ -30,10 +30,17 @@ module Kosy.Integration.GoogleDrive {
                 });
             });
 
+            let viewId: google.picker.ViewId;
+
+            switch (__BUILD_TYPE__) {
+                case "docs": viewId = google.picker.ViewId.DOCUMENTS; break;
+                case "sheets": viewId = google.picker.ViewId.SPREADSHEETS; break;
+                case "slides": viewId = google.picker.ViewId.PRESENTATIONS; break;
+            }
+
             //Use the google pickerbuilder to generate the picker -> 
             return new google.picker.PickerBuilder()
-                    //Filters the view for documents
-                    .addView(google.picker.ViewId.DOCS)
+                    .addView(viewId)
                     .setOAuthToken(oauthToken)
                     .setDeveloperKey(googleApiKey)
                     .enableFeature(google.picker.Feature.NAV_HIDDEN)
