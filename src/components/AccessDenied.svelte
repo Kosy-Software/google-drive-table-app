@@ -14,7 +14,6 @@
         <h3>You don't have access to this file</h3>
         <p>{msg}</p>
     </div>
-    <div class="gap"></div>
     <div>
         <img class="access-denied" src="assets/access-denied.svg" alt="access-denied">
     </div>

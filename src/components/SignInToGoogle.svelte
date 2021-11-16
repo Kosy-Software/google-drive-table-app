@@ -40,8 +40,9 @@
 
 
 <div class="center-content waiting">
-    <h3>Google Drive sharing</h3>
-    <div class="gap" />
+    <div>
+        <h3>Google Drive sharing</h3>
+    </div>
     {#if $initializer.clientUuid == $currentClient.clientUuid}
         <p>To start sharing a file, please log in with google</p>
     {:else if url}

@@ -87,8 +87,8 @@
         font-size: 16px;
         
         input {
-            padding: 13px 13px 13px 13px;
-            width: 374px;
+            padding: 16px 20px 16px 20px;
+            width: 360px;
         }
 
         div {
@@ -107,7 +107,8 @@
         }
 
         .icon-left {
-            height: 16px;
+            height: 20px;
+            padding-left: 0;
             margin-top: -2px;
         }
 
@@ -140,7 +141,6 @@
         <div>
             <h3>Embed Google { title }</h3>
         </div>
-        <div class="gap" />
         <div class="buttons">
             <Button importance="secondary" on:click={() => openGoogleDriveFilePicker()}>
                 <img class="icon-left" alt="Pick a file icon" src={icon} />
