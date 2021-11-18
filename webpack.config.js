@@ -93,6 +93,13 @@ const getPlugins = (config, isProduction, env) => {
         })
     ];
 
+    const iconToCopy;
+    switch (env.type) {
+        case "docs": iconToCopy = { from: "./src/assets/Icon-Docs.png", to: "icon.png" }; break;
+        case "sheets": iconToCopy = { from: "./src/assets/Icon-Sheets.png", to: "icon.png" }; break;
+        case "slides": iconToCopy = { from: "./src/assets/Icon-Slides.png", to: "icon.png" }; break;
+    }
+    
     if (isProduction) {
         return [ 
             ...basePlugins, 
@@ -102,7 +109,7 @@ const getPlugins = (config, isProduction, env) => {
             new CopyWebpackPlugin({ 
                 patterns: [
                     { from: "./src/assets", to: "./assets" },
-					{ from: "./icon.png", to: "icon.png" }
+					iconToCopy
                 ]
             })
         ]; 
