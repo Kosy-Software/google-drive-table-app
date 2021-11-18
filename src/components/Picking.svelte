@@ -125,14 +125,19 @@
                 width: 100%;
             }
         }
+
+        .creating-icon {
+            width: 90px;
+            height: 90px;
+        }
     }
 </style>
 
 <div class="center-content picking">
-    {#if creatingFile}
+    {#if !creatingFile}
         <div>
             <h3>Your file is being created...</h3>
-            <div class="big-gap" />
+            <div class="large-gap" />
             <div>
                 <img class="creating-icon" alt="creating" src="assets/creating.gif" />
             </div>
