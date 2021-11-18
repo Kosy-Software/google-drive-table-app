@@ -11,7 +11,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@kosy/kosy-app-api": "^0.3.10",
+    "@kosy/kosy-app-api": "^0.4.1",
     "@kosy/kosy-svelte-components": "^0.1.6",
     "@tsconfig/svelte": "^2.0.1",
     "@types/gapi": "0.0.41",
