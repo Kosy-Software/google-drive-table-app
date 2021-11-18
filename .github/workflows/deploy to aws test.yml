@@ -38,11 +38,25 @@ jobs:
           yarn install
           yarn run build
            
-      - name: Deploy to aws 🚀
+      - name: Deploy docs to aws 🚀
         uses: jakejarvis/s3-sync-action@master
         env:
-          SOURCE_DIR: dist
+          SOURCE_DIR: dist/docs
           DEST_DIR: apricot
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+
+      - name: Deploy sheets to aws 🚀
+        uses: jakejarvis/s3-sync-action@master
+        env:
+          SOURCE_DIR: dist/sheets
+          DEST_DIR: banana
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+
+      - name: Deploy slides to aws 🚀
+        uses: jakejarvis/s3-sync-action@master
+        env:
+          SOURCE_DIR: dist/presentations
+          DEST_DIR: cherry
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
 
       - name: Create CloudFront Cache Invalidation ☁️
