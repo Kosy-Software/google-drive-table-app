@@ -93,7 +93,7 @@ const getPlugins = (config, isProduction, env) => {
         })
     ];
 
-    const iconToCopy;
+    let iconToCopy;
     switch (env.type) {
         case "docs": iconToCopy = { from: "./src/assets/Icon-Docs.png", to: "icon.png" }; break;
         case "sheets": iconToCopy = { from: "./src/assets/Icon-Sheets.png", to: "icon.png" }; break;
