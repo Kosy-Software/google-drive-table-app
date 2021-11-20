@@ -56,7 +56,7 @@ jobs:
       - name: Deploy slides to aws 🚀
         uses: jakejarvis/s3-sync-action@master
         env:
-          SOURCE_DIR: dist/presentations
+          SOURCE_DIR: dist/slides
           DEST_DIR: google-slides
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
 
