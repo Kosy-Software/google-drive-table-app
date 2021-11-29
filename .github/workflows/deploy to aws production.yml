@@ -37,6 +37,7 @@ jobs:
       - name: Install and Build 🔧
         run: |
           yarn install
+          yarn run check
           yarn run build
            
       - name: Deploy docs to aws 🚀
