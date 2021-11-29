@@ -134,7 +134,7 @@
 </style>
 
 <div class="center-content picking">
-    {#if !creatingFile}
+    {#if creatingFile}
         <div>
             <h3>Your file is being created...</h3>
             <div class="large-gap" />
