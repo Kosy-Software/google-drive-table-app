@@ -4,7 +4,7 @@
     import type { GoogleDriveUrlPicked, PickedEvent } from "../lib/componentMessages";
     import { hasValidGoogleFormat, createFileShareLink, convertGoogleLinkToEmbeddableLink, createGoogleDriveFile } from "../lib/googleDrive";
     import { openPopup } from "../lib/openPopup";
-    import { currentClient } from "../stores";
+    import { currentClient, initialInfo } from "../stores";
 
     const dispatch = createEventDispatcher<PickedEvent>();
 
@@ -50,7 +50,8 @@
     }
 
     const now = new Date ();
-    const getFileName = () => `${ $currentClient.clientLocation.table.tableName }_${ now.getFullYear() }_${ now.getMonth() + 1 }_${ now.getDate() }`;
+    const locationName = ($initialInfo.locationName && $initialInfo.locationName !== "") ? $initialInfo.locationName : "New";
+    const getFileName = () => `${ locationName }_${ now.getFullYear() }_${ now.getMonth() + 1 }_${ now.getDate() }`;
 
     const createFile = async () => {
         try {

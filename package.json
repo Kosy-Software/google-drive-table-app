@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "webpack serve --mode development --compress --open --env type=docs",
+    "start": "svelte-check && webpack serve --mode development --compress --open --env type=docs",
     "start-docs": "webpack serve --mode development --compress --open --env type=docs",
     "start-sheets": "webpack serve --mode development --compress --open --env type=sheets",
     "start-slides": "webpack serve --mode development --compress --open --env type=slides",
